@@ -690,7 +690,7 @@ output.names <- function(admin,prosecutionHypothesis)
 	return(list(pdf.name=pdf.name,RData.name=RData.name))
 	}
 
-  # Function to calculate sensible csx for each table:
+  # Function to calculate sensible cex for each table:
   cex.finder = function(table){
 	widest.row.name = max(nchar(row.names(table))) # vector of characters in the widest row name
 	heading.widths = nchar(names(table)) # vector of characters in each column name
@@ -724,28 +724,29 @@ allele.report <- function(admin=NULL,file=NULL) {
 
   # checks all arguments are present, and creates default name for file if missing
   if(is.null(admin))stop('missing argument: admin')
-  if(is.null(file))outputName = paste(admin$caseName,'-alleleReport.pdf',sep="")
-  if(!is.null(file))outputName = file
+  if(is.null(file))file <- admin$caseName 
 
   # reads genetics information 
   genetics = pack.genetics.input(admin)
 
-  # Unnatributable alleles
-  otherBoth = genetics$summary$otherRep + genetics$summary$otherUnrep
+  # create allele table	
+  alleles = allele.table(genetics$cprofs)
 
-#----------------------------------------------
+  # Latex output
+  latex.maker(alleles,genetics$summary$summary,(paste(admin$outputPath,"/",file," table.tex",sep="")))
+
   # Start plotting pdf
-  pdf(paste(admin$outputPath,outputName,sep="/"))
+  pdf(paste(admin$outputPath,"/",file," allele report.pdf",sep=""))
   par(mai = rep(0.3,times=4))
 
   # PAGE 1 
+  otherBoth = genetics$summary$otherRep + genetics$summary$otherUnrep
   heights.pg1 = c(genetics$nrep,length(c(genetics$nameQ,genetics$nameK)),barchart.finder(otherBoth))
   heights.pg1 = heights.pg1 +1 # space for headers
   widths.pg1 = c(1)
   layout(matrix(c(1:length(heights.pg1)),nrow=length(heights.pg1)),heights = heights.pg1, widths=widths.pg1)
 
   # Alleles
-  alleles = allele.table(genetics$cprofs)
   textplot(alleles, valign='top',cex=cex.finder(alleles))
   mtext(paste(admin$caseName,'Allele Report'),side=3,cex=1.2)
 
@@ -1078,3 +1079,79 @@ Nkdo:    number of profiled potential contributors subject to dropout.
   title('Software')
 dev.off()
 }
+
+latex.cleaner <- function(text){
+# text: text produced by any of the following functions:
+# latex.table.header()
+# allele.table.to.latex	
+	text <- gsub('{\\bf}','',text,fixed=T)
+	text <- gsub(',\\fx{}','',text,fixed=T)
+	text <- gsub('{\\em}','',text,fixed=T)
+	text <- gsub(',,',',',text,fixed=T)
+	text <- gsub(',&','&',text,fixed=T)
+	text <- gsub('&,','&',text,fixed=T)
+	text <- gsub(',\\\\\\hline','\\\\\\hline',text,fixed=T)
+	text <- gsub('(Q)','',text,fixed=T)
+	text <- gsub('(K)','',text,fixed=T)
+return(text)}
+
+latex.table.header <- function(t1,t2){
+# table1 table2 in either order are: 
+# CSP table produced by allele.table() 
+# Reference summary table $summary$summary produced by pack.genetics.input()
+	if(ncol(t1)!=ncol(t2))stop('different number of loci in CSP and Ref tables!')
+	text <- c('
+	\\begin{sidewaystable}[p]\n
+	%\\setcounter{table}{1}
+	',
+	paste('\\begin{center}\\begin{tabular}{|',paste(rep('c|',ncol(t1)+1),collapse=''),'}\\hline',sep=''),
+	paste('&',paste(names(t1),collapse='&'),'\\\\\\hline',sep=''),
+	paste('\\multicolumn{',ncol(t1)+1,'}{|l|}{Crime scene profiles}\\\\\\hline',sep=''))
+return(text)}
+
+allele.table.to.latex <- function(table){
+# table: CSP table produced by allele.table() 
+	text = c()
+	N.col <- ncol(table)
+	N.row <- nrow(table)
+	for(row in 1:N.row){
+		text.line <- character(N.col)
+		for(col in 1:N.col){
+			if(as.character(table[row,col])=='')text.line[col] <- '--'
+			if(as.character(table[row,col])!='')text.line[col] <- gsub(' ',',',table[row,col])
+			}
+		if(row%%2==1)text=c(text,paste(paste(row.names(table)[row],paste(text.line,collapse='&'),sep='&'),'\\\\',sep=''))
+		if(row%%2==0)text=c(text,paste(paste(row.names(table)[row],paste(text.line,collapse='&'),sep='&'),'\\\\\\hline',sep=''))
+		}
+return(text)}
+
+summary.table.to.latex <- function(table){
+# table: Reference summary table $summary$summary produced by pack.genetics.input()
+	text = paste('\\multicolumn{',ncol(table)+1,'}{|l|}{SUMMARY:}\\\\\\hline',sep='')
+	N.col <- ncol(table)
+	N.row <- nrow(table)
+	for(row in 1:N.row){
+		text.line = character(N.col)
+		for(col in 1:N.col){
+			temp1 = sub('{','},{\\em',table[row,col],fixed=T)
+			temp2 = sub('[',',\\fx{',temp1,fixed=T)
+			temp3 = sub(']','}',temp2,fixed=T)
+			temp4 = sub(' ',',',temp3,fixed=T)
+			text.line[col] = paste('{\\bf',temp4,sep='')
+			}
+		text=c(text,paste(paste(row.names(table)[row],paste(text.line,collapse='&'),sep='&'),'\\\\\\hline',sep=''))
+		}
+return(text)}
+
+latex.maker <- function(table1,table2,filename){
+# table1: CSP table produced by allele.table() 
+# table2: Reference summary table $summary$summary produced by pack.genetics.input()
+	text.1 <- latex.table.header(table1,table2)
+	text.2 <- allele.table.to.latex(table1)
+	text.3 <- summary.table.to.latex(table2)
+	text <- latex.cleaner(c(text.1,text.2,text.3))
+
+	file <- file(filename)
+	writeLines(text,file)
+	close(file)
+	}
