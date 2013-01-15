@@ -164,10 +164,19 @@ likelihood.constructs.per.locus = function(hypothesis) {
                                     hypothesis$nUnknowns, hypothesis$doDropin,
                                     missingReps)
   zeroAll = empty.alleles(genotypes, dropoutPresence, hypothesis$nUnknowns) 
-  factors = genotype.factors(genotypes, hypothesis$alleleDb,
+  # Only take into account relatedness between Q and X unedr Hd 
+  if(hypothesis$hypothesis=="defence")
+	{
+  	factors = genotype.factors(genotypes, hypothesis$alleleDb,
                              hypothesis$nUnknowns, hypothesis$doDropin,
                              hypothesis$queriedProfile,
                              hypothesis$relatedness) 
+	} else {
+  	factors = genotype.factors(genotypes, hypothesis$alleleDb,
+                             hypothesis$nUnknowns, hypothesis$doDropin,
+                             hypothesis$queriedProfile,
+                             c(0,0))
+	}
 
   list(cspPresence=cspPresence, dropoutPresence=dropoutPresence,
        uncPresence=uncPresence, missingReps=missingReps,
@@ -328,11 +337,19 @@ create.likelihood.vectors <- function(hypothesis, addAttr=FALSE, ...) {
   functions <- mapply(create.likelihood.per.locus, locusCentric,
                       MoreArgs=list(addAttr=addAttr))
 
+  if(is.null(hypothesis$locusAdjPenalty)) hypothesis$locusAdjPenalty = 50 
+  if(is.null(hypothesis$dropinPenalty)) hypothesis$dropinPenalty = 2 
+  if(is.null(hypothesis$degradationPenalty)) hypothesis$degradationPenalty = 50 
+  if(is.null(hypothesis$bemn)) hypothesis$bemn = -4.35
+  if(is.null(hypothesis$besd)) hypothesis$besd = 0.38 
+
   likelihood.vectors <- function(locusAdjustment, power, dropout,
                                  degradation=NULL, rcont=NULL, dropin=NULL,
-                                 locusAdjPenalty=50, dropinPenalty=2,
-                                 degradationPenalty=50, bemn=-4.35,
-                                 besd=0.38, ...) {
+                                 locusAdjPenalty=hypothesis$locusAdjPenalty, 
+				 dropinPenalty=hypothesis$dropinPenalty,
+                                 degradationPenalty=hypothesis$degradationPenalty, 
+				 bemn=hypothesis$bemn,
+                                 besd=hypothesis$besd, ...) {
     # Call each and every function in the array.
     arguments = list(power=power, dropout=dropout,
                      degradation=degradation, rcont=rcont,
