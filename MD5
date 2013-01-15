@@ -1,11 +1,11 @@
-f1e005f627863930d7e7a48071ff89c2 *DESCRIPTION
+ac292210401a249921805a42134ef286 *DESCRIPTION
 f6896fcc1bd3832400cad73a96ac7081 *NAMESPACE
 eecc5b75864c2bc8366cd76dc4a2f041 *R/genetics.R
 de34a84cb6cff09f6831cb897d0479b1 *R/hypothesis.R
-8e6a3610611b58df50df9393a5dffe27 *R/maximize.R
-41c16c8fbc3d0a0e5cf773485452fc41 *R/objectives.R
+d6092e5772bd29318fe25cb1580bfe86 *R/maximize.R
+e9408861f103e3eff50b6ec53c90131f *R/objectives.R
 82752a04f7edc99eabd0a0617fa70cf8 *R/plotter.R
-4cd2c685d47ba682fda9039e03b62df1 *R/reports.R
+9d8103d93f895fbfe02e1d93a494a6c2 *R/reports.R
 3309d10573a1a2e545b1f256fae0496e *data/lgc-allele-freqs-wbp.txt.gz
 8a20e5ce989bf355b198ed67bc681082 *demo/00Index
 1edbf7f21959f3a4ef5f94bb5143b860 *demo/allele_report.R
@@ -14,8 +14,8 @@ de34a84cb6cff09f6831cb897d0479b1 *R/hypothesis.R
 a13c7e1ac118eada7927474e7d0b8b95 *demo/timings.R
 ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
 2af5f86ca741114b8a85e9584a30f5cb *inst/doc/usage.R
-13f0499c9314f83e53b19268b3322000 *inst/doc/usage.Rnw
-5b9379101e6a2e4a598385ab264b330a *inst/doc/usage.pdf
+3b30dc60b159cd03b838529b78b6243b *inst/doc/usage.Rnw
+1f93e0e02ce89d4e6451f701b21051dd *inst/doc/usage.pdf
 53e8c9eecd4fe2bc721997985ebeba06 *inst/extdata/hammer/hammer-CSP.csv
 4fa5f58b1d6bfb399fa0a8a1b506f7c9 *inst/extdata/hammer/hammer-reference.csv
 01399a9798476da9145eeaff377432fc *inst/extdata/hammer/space-CSP.csv
@@ -45,7 +45,7 @@ c10af665e20eb2d3d1356fa156e84c49 *man/create.likelihood.vectors.Rd
 1152484ae33c8b5fd032c18c053bb86f *man/determine.dropout.Rd
 b60051fe0012614129a29d31c664fa84 *man/initial.arguments.Rd
 2b973e72c898b32fe605343498b8f585 *man/lgc-allele-freqs-wbp.Rd
-fa7e4dcfaae52481c75e8f22d68433a9 *man/likeLTD.Rd
+1be2eaaf82aa97d0a5105fae8a6b4d58 *man/likeLTD.Rd
 559a6a146810eb867601a41461fe3c32 *man/load.allele.database.Rd
 b067e2f5902c634d87a0197942d8f28d *man/locus.likes.Rd
 d14af6b31e3e1fcd1f0a496da084d9d6 *man/objective.functions.Rd
@@ -71,4 +71,4 @@ c3219013ea9b21cf21badf46e824077d *src/genetics.h
 e71321dc8875a4df9ab6daf115c1b73b *src/objectives.h
 3ac16b82049fbe35bc22e704cfaa7f09 *src/openmp.cpp
 d2f09ce57bbfb480a1fe63383821c9a9 *src/openmp.h
-13f0499c9314f83e53b19268b3322000 *vignettes/usage.Rnw
+3b30dc60b159cd03b838529b78b6243b *vignettes/usage.Rnw
