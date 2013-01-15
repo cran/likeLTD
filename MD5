@@ -1,11 +1,11 @@
-ac292210401a249921805a42134ef286 *DESCRIPTION
+3a21f0c0c2c5edfc8303f233a8ceefd9 *DESCRIPTION
 f6896fcc1bd3832400cad73a96ac7081 *NAMESPACE
 eecc5b75864c2bc8366cd76dc4a2f041 *R/genetics.R
 de34a84cb6cff09f6831cb897d0479b1 *R/hypothesis.R
 d6092e5772bd29318fe25cb1580bfe86 *R/maximize.R
 e9408861f103e3eff50b6ec53c90131f *R/objectives.R
 82752a04f7edc99eabd0a0617fa70cf8 *R/plotter.R
-9d8103d93f895fbfe02e1d93a494a6c2 *R/reports.R
+2d1c9729ce585ccda32a652897c25058 *R/reports.R
 3309d10573a1a2e545b1f256fae0496e *data/lgc-allele-freqs-wbp.txt.gz
 8a20e5ce989bf355b198ed67bc681082 *demo/00Index
 1edbf7f21959f3a4ef5f94bb5143b860 *demo/allele_report.R
@@ -15,7 +15,7 @@ a13c7e1ac118eada7927474e7d0b8b95 *demo/timings.R
 ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
 2af5f86ca741114b8a85e9584a30f5cb *inst/doc/usage.R
 3b30dc60b159cd03b838529b78b6243b *inst/doc/usage.Rnw
-1f93e0e02ce89d4e6451f701b21051dd *inst/doc/usage.pdf
+8c07d2ce917961d588e407e63194c06e *inst/doc/usage.pdf
 53e8c9eecd4fe2bc721997985ebeba06 *inst/extdata/hammer/hammer-CSP.csv
 4fa5f58b1d6bfb399fa0a8a1b506f7c9 *inst/extdata/hammer/hammer-reference.csv
 01399a9798476da9145eeaff377432fc *inst/extdata/hammer/space-CSP.csv
