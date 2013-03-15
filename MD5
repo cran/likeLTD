@@ -1,11 +1,11 @@
-4ce936504731a17b9c403b2240c1c03f *DESCRIPTION
-afa7326801ba7c8a87b24475b4090f64 *NAMESPACE
+15ca873d77deb59972e62e4e6419b6dd *DESCRIPTION
+da74179d127339c5959f1c5b03ce2190 *NAMESPACE
 eecc5b75864c2bc8366cd76dc4a2f041 *R/genetics.R
 cbbd44b379abc8600a88732c864acd3e *R/hypothesis.R
 4cf0120b58a560a25f903e49a574531c *R/maximize.R
 f0e32254ef3ca8857d38df4f4244937b *R/objectives.R
-82752a04f7edc99eabd0a0617fa70cf8 *R/plotter.R
-06e9c69891006cb21a900836a26171bb *R/reports.R
+1d06cdf0c983e6f8ee2813eb6a10ee92 *R/plotter.R
+40f05c59eff464ac10c70e5eab9ee694 *R/reports.R
 3309d10573a1a2e545b1f256fae0496e *data/lgc-allele-freqs-wbp.txt.gz
 8a20e5ce989bf355b198ed67bc681082 *demo/00Index
 1edbf7f21959f3a4ef5f94bb5143b860 *demo/allele_report.R
@@ -16,7 +16,7 @@ ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
 c05c52c8bd376089717618b457d4dcff *inst/doc/likeLTDguide.pdf
 2af5f86ca741114b8a85e9584a30f5cb *inst/doc/usage.R
 3b30dc60b159cd03b838529b78b6243b *inst/doc/usage.Rnw
-1c2cb8c50e2a990b38a4da6724f5df0a *inst/doc/usage.pdf
+d8eb0952669d4f0cf5a3f6bdf76c3f76 *inst/doc/usage.pdf
 53e8c9eecd4fe2bc721997985ebeba06 *inst/extdata/hammer/hammer-CSP.csv
 4fa5f58b1d6bfb399fa0a8a1b506f7c9 *inst/extdata/hammer/hammer-reference.csv
 01399a9798476da9145eeaff377432fc *inst/extdata/hammer/space-CSP.csv
@@ -35,9 +35,9 @@ cf1a3f15b7e4135d3e0eabf02466c379 *inst/unitTests/runit_nodropout.R
 1482d63cef0ee986251e66900c3a8deb *inst/unitTests/runit_novictims.R
 410c024c55728e8fb854cac3eea76423 *inst/unitTests/runit_objective.R
 764290856e1f829da896ba427bd49873 *inst/unitTests/runit_objectivePerLocus.R
-50c35fb8a1fca6944606a554b0133fab *inst/unitTests/runit_reports.R
+ef8f7e75e7bdbddf3b4bd58309c00e76 *inst/unitTests/runit_reports.R
 7221dfe8f15280559856ed4139707a6b *man/DEoptimLoop.Rd
-0332e28c772427f4e3f1d78e1a341cee *man/allele.report.Rd
+a9b0d49f4ed818479b9255ca523ca341 *man/allele.report.Rd
 e479fb3cac14d19589071e849c5e5e1d *man/compatible.genotypes.Rd
 847be351a728b8a30a00bb30ac0fab2b *man/create.likelihood.Rd
 bdefc160fd04e843153f0e9e3c4cf0ee *man/create.likelihood.log.Rd
@@ -52,8 +52,7 @@ b60051fe0012614129a29d31c664fa84 *man/initial.arguments.Rd
 b067e2f5902c634d87a0197942d8f28d *man/locus.likes.Rd
 d14af6b31e3e1fcd1f0a496da084d9d6 *man/objective.functions.Rd
 24d4e580e08631bc7f3e57483b0d81a4 *man/optimisation.params.Rd
-186d1796f9ab772164a8773ea7406bb3 *man/output.names.Rd
-29538922ebe52ff3a5759954cd1e7e4d *man/output.report.Rd
+d17cf1cd471e3a5242c26ed05c6b7547 *man/output.report.Rd
 07f726b02447bfc13e59a4e38a6ce965 *man/pack.admin.input.Rd
 12516a5d9e038f569b9332ca515de1a4 *man/penalties.Rd
 00a4b2688cbcacd075a91abdd5082c1d *man/plotLikelihood.2d.Rd
