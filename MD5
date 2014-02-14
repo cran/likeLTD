@@ -1,9 +1,9 @@
-892259c26bca6e6bb30ee728ae90087f *DESCRIPTION
-f6896fcc1bd3832400cad73a96ac7081 *NAMESPACE
+b6d277014b26250b5c8fb287916ac162 *DESCRIPTION
+2c3440c425d02088202e589703ba0b8c *NAMESPACE
 eecc5b75864c2bc8366cd76dc4a2f041 *R/genetics.R
 de34a84cb6cff09f6831cb897d0479b1 *R/hypothesis.R
-d6092e5772bd29318fe25cb1580bfe86 *R/maximize.R
-e9408861f103e3eff50b6ec53c90131f *R/objectives.R
+1cdf8e89f27765e9abfd909601e22676 *R/maximize.R
+7b414966170c794caacb958247bfaba8 *R/objectives.R
 82752a04f7edc99eabd0a0617fa70cf8 *R/plotter.R
 06e9c69891006cb21a900836a26171bb *R/reports.R
 3309d10573a1a2e545b1f256fae0496e *data/lgc-allele-freqs-wbp.txt.gz
@@ -15,7 +15,7 @@ a13c7e1ac118eada7927474e7d0b8b95 *demo/timings.R
 ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
 2af5f86ca741114b8a85e9584a30f5cb *inst/doc/usage.R
 3b30dc60b159cd03b838529b78b6243b *inst/doc/usage.Rnw
-fa86ee9a6046ebd6aaceefa8dab8d13e *inst/doc/usage.pdf
+501c494d173c5fbe800fb32cdc2f2fdc *inst/doc/usage.pdf
 53e8c9eecd4fe2bc721997985ebeba06 *inst/extdata/hammer/hammer-CSP.csv
 4fa5f58b1d6bfb399fa0a8a1b506f7c9 *inst/extdata/hammer/hammer-reference.csv
 01399a9798476da9145eeaff377432fc *inst/extdata/hammer/space-CSP.csv
@@ -32,7 +32,7 @@ fa107df40f21997b808a54405cb839b9 *inst/unitTests/runit_hypothesis.R
 63b1ddc51b598b99a597452a341edfc3 *inst/unitTests/runit_nodropin.R
 cf1a3f15b7e4135d3e0eabf02466c379 *inst/unitTests/runit_nodropout.R
 1482d63cef0ee986251e66900c3a8deb *inst/unitTests/runit_novictims.R
-b96239981416df8c749113f1c0aa2a39 *inst/unitTests/runit_objective.R
+410c024c55728e8fb854cac3eea76423 *inst/unitTests/runit_objective.R
 764290856e1f829da896ba427bd49873 *inst/unitTests/runit_objectivePerLocus.R
 50c35fb8a1fca6944606a554b0133fab *inst/unitTests/runit_reports.R
 7221dfe8f15280559856ed4139707a6b *man/DEoptimLoop.Rd
