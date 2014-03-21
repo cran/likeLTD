@@ -19,6 +19,7 @@ rounder <- function(x,n){
 	# deals with three repetitive issues (that are more insipid than might be expected! :
 	# numerics are best converted to text, to prevent MS Word from formatting them
 	# rounding
+
 	# rounding a number with a few zeros results in 0 when we actually want 0.00 
 	if(is.numeric(x))x <- round(x,n) # method for vectors
 	if(is.data.frame(x)){	# method for data.frames, each column at a time
@@ -37,8 +38,11 @@ latex.table.header <- function(genetics){
 	# helper function for latex.maker()
 	N <- ncol(genetics$summary$table$latex)+1
 	text <- c('
+	\\documentclass{article}\n
+	\\usepackage{rotating}\n
+	\\begin{document}\n
 	\\begin{sidewaystable}[p]\n
-	%\\setcounter{table}{1}
+	%\\setcounter{table}{1}\n
 	',
 	paste('\\begin{center}\\begin{tabular}{|',paste(rep('c|',N),collapse=''),'}\\hline',sep=''),
 	paste('&',paste(names(genetics$summary$table$latex),collapse='&'),'\\\\\\hline',sep=''),
@@ -57,7 +61,7 @@ csp.table.to.latex <- function(genetics){
 		table <- rbind(table,table.unc[n,])
 		}
 	colnames(table) <- colnames(genetics$cspData)
-	row.names(table) <- rep(c('csp','unc'),genetics$nrep)
+	row.names(table) <- rep(c('alleles','uncertain'),genetics$nrep)
 	text = c()
 	N.col <- ncol(table)
 	N.row <- nrow(table)
@@ -77,24 +81,38 @@ ref.table.to.latex <- function(genetics){
 	# helper function for latex.maker()
 	# table: Reference table, from genetics$summary$table$latex
 	table <- genetics$summary$table$latex
-	text = paste('\\multicolumn{',ncol(table)+1,'}{|l|}{SUMMARY:}\\\\\\hline',sep='')
+	text = paste('\\multicolumn{',ncol(table)+1,'}{|l|}{Summary:}\\\\\\hline',sep='')
 	for(row in 1:nrow(table)){
 		text=c(text,paste(paste(row.names(table)[row],paste(table[row,],collapse='&'),sep='&'),'\\\\\\hline',sep=''))
 		}
 return(text)}
 
+#--------------------------------------------------------------------------------------------------------------------
+latex.table.footer <- function(){
+	# helper function for latex.maker()
+	text <- c('
+	\n
+	\\end{tabular}\n
+	\\caption{Alleles that are \\bf replicated \\rm unreplicated and \\it absent \\rm in the crime scene profile}\n
+	\\end{center}\n
+	\\end{sidewaystable}\n
+	\\end{document}\n
+	')
+return(text)}
+
+#--------------------------------------------------------------------------------------------------------------------	
 latex.maker <- function(genetics,filename){
 # table1: CSP table produced by allele.table() 
 # table2: Reference table, from genetics$summary$table$latex
 	text.1 <- latex.table.header(genetics)
 	text.2 <- csp.table.to.latex(genetics)
 	text.3 <- ref.table.to.latex(genetics)
-	text <- c(text.1,text.2,text.3)
+	text.4 <- latex.table.footer()
+	text <- c(text.1,text.2,text.3,text.4)
 
 	file <- file(filename)
 	writeLines(text,file)
-	close(file)
-	}
+	close(file)}
 
 #--------------------------------------------------------------------------------------------------------------------
 pack.admin.input <- function(cspFile, refFile, caseName='dummy',databaseFile=NULL, outputPath=getwd() ) {
@@ -134,11 +152,11 @@ load.allele.database <- function(path=NULL) {
 
 #--------------------------------------------------------------------------------------------------------------------
 unattributable.plot.maker <- function(genetics){
-    with(genetics$summary$counts,
-	    plot <- ggplot(data=genetics$summary$counts, aes(x=loci,y=counts,fill=status))+
-		    geom_bar(stat='identity')+
-		    scale_fill_grey()
-		)
+
+	loci <- counts <- status <- NULL
+	plot <- ggplot(data=genetics$summary$counts, aes(x=loci,y=counts,fill=status))+
+		 geom_bar(stat='identity')+
+		scale_fill_grey()	
 return(plot)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -268,17 +286,23 @@ system.info <- function(){
 return(all)}
 
 #--------------------------------------------------------------------------------------------------------------------
-filename.maker <- function(outputPath,file,type=NULL){
+filename.maker <- function(outputPath,caseName,filename,type=NULL){
 	# type: report type, one of 'allele' or 'results'
-	if(is.null(file)){ 
-		if(is.null(type)) title <- 'Report' # shouldn't remain as NULL, but just incase
-		if(type=='allele')title <- 'Allele Report'
-		if(type=='results')title <- 'DNA profile evaluation report'
+
+	# construct title 
+	if(is.null(type)) title <- 'Report-' # shouldn't be possible to remain as NULL, but just incase
+	if(type=='allele')title <- 'Allele-Report-'
+	if(type=='results')title <- 'DNA-profile-evaluation-report-'
+
+	# assign a filename, if NULL was handed down
+	if(is.null(filename)){
 		n <- 1
-		filename <- file.path(outputPath,paste(title,n,'doc',sep='.'))
+		filename <- file.path(outputPath,paste(title,n,'.doc',sep=''))
+	
+		# prevent overwriting
 		while(file.exists(filename)){
 			n <- n + 1
-			filename <- file.path(outputPath,paste(title,n,'doc',sep='.'))
+			filename <- file.path(outputPath,paste(title,n,'.doc',sep=''))
 			}
 		}
 return(list(filename=filename,title=title))}
@@ -286,13 +310,15 @@ return(list(filename=filename,title=title))}
 #--------------------------------------------------------------------------------------------------------------------
 hyp.P <- function(genetics){
 	Q <- paste(genetics$nameQ,'(Q)') 
-	HP <- paste('Prosecution Hypothesis:',paste(c(Q,genetics$nameK),collapse=' + ')  )
+	U <- paste(genetics$P.hyp$nUnknowns,'U',sep='')
+	HP <- paste('Prosecution Hypothesis:',paste(c(Q,genetics$nameK,U),collapse=' + ')  )
 	if(is.null(genetics$nameK))HP <- NULL # genetics object is different for allele report or final report
 return(HP)}
 
 hyp.D <- function(genetics){
 	X <- 'Unknown (X)'
-	HD <- paste('Defence Hypothesis:',paste(c(X,genetics$nameK),sep=' + ') )
+	U <- paste(genetics$D.hyp$nUnknowns-1,'U',sep='')
+	HD <- paste('Defence Hypothesis:',paste(c(X,genetics$nameK,U),collapse=' + ') )
 	if(is.null(genetics$nameK))HD <- NULL # genetics object is different for allele report or final report
 return(HD)}
 
@@ -352,6 +378,7 @@ pack.genetics.for.output.report <- function(P.hyp,D.hyp){
 	QvK <- queried.vs.known(P.hyp$refFile)
 	nameQ <- row.names(refData)[QvK]
 	nameK <- row.names(refData)[!QvK]
+
 	output.report.genetics <- list( 
 	cspData = cspData, 
 	uncData = uncData,
@@ -499,8 +526,12 @@ summary.helper <- function(refAlleles,cspAlleles){
 
 	# separate by commas, and apply latex, such that replicated=bold, and unreplicated=italic
 	if(!is.null(rep.latex))rep.latex <- paste('{\\bf',paste(rep.latex,collapse=','),'}',sep='')
-	if(!is.null(unrep.latex))unrep.latex <- paste('{\\em',paste(unrep.latex,collapse=','),'}',sep='')
-	if(!is.null(absent.latex))absent.latex <- paste('{\\fx',paste(absent.latex,collapse=','),'}',sep='')
+	# previous key was italic(actually 'emphasis') for unreplicated, a box (fx) for absent
+	#if(!is.null(unrep.latex))unrep.latex <- paste('{\\em',paste(unrep.latex,collapse=','),'}',sep='')
+	#if(!is.null(absent.latex))absent.latex <- paste('{\\fx',paste(absent.latex,collapse=','),'}',sep='')
+	# new assignments are consistent with rtf reports
+	#if(!is.null(unrep.latex))unrep.latex <- paste('{\\rm',paste(unrep.latex,collapse=','),'}',sep='')
+	#if(!is.null(absent.latex))absent.latex <- paste('{\\it',paste(absent.latex,collapse=','),'}',sep='')
 	latex <- paste(c(rep.latex,unrep.latex,absent.latex),collapse=',')
 
 return(list(rtf=rtf,latex=latex,rep=length(rep),unrep=length(unrep)))}
@@ -694,7 +725,9 @@ common.report.section <- function(names,genetics){
 
 	addHeader(doc, "Summary", TOC.level=1,font.size=fs1)
 	addHeader(doc, "Unattributable alleles", TOC.level=2, font.size=fs2)
-	addPlot( doc, plot.fun = print, x = unattributable.plot.maker(genetics) , width = 10, height = 3.5)
+	plot.function <- unattributable.plot.maker(genetics)
+	addPlot( doc, plot.fun = print, width = 10, height = 3.5, x = plot.function )
+
 	addParagraph( doc, "The number of 'certain' alleles that cannot be attributed to a known profile.")
 	spacer(doc,3)
 
@@ -718,11 +751,11 @@ allele.report <- function(admin,file=NULL){
 
 	# create genetics information
 	genetics <- pack.genetics.for.allele.report(admin)
- 	
-	# Latex output
-	latex.maker(genetics,(paste(admin$outputPath,"/",file," table.tex",sep="")))
 
-	names <- filename.maker(admin$outputPath,file,type='allele')
+	# Latex output
+	latex.maker(genetics, file.path(admin$outputPath,'table.tex')  )
+
+	names <- filename.maker(admin$outputPath,admin$caseName,file,type='allele')
 	names$subtitle <- admin$caseName
 
 	doc <- common.report.section(names,genetics)
@@ -751,7 +784,7 @@ output.report <- function(prosecutionHypothesis,defenceHypothesis,prosecutionRes
 
 	# create genetics information 
 	genetics <- pack.genetics.for.output.report(prosecutionHypothesis,defenceHypothesis)
-	names <- filename.maker(prosecutionHypothesis$outputPath,file,type='results')
+	names <- filename.maker(prosecutionHypothesis$outputPath,prosecutionHypothesis$caseName,file,type='results')
 	names$subtitle <- prosecutionHypothesis$caseName
 
 	doc <- common.report.section(names,genetics)
