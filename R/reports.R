@@ -93,7 +93,7 @@ latex.table.footer <- function(){
 	text <- c('
 	\n
 	\\end{tabular}\n
-	\\caption{Alleles that are \\bf replicated \\rm unreplicated and \\it absent \\rm in the crime scene profile}\n
+	\\caption{Alleles that are \\textbf{replicated} \\textit{unreplicated} and \\fbox{absent} in the crime scene profile}\n
 	\\end{center}\n
 	\\end{sidewaystable}\n
 	\\end{document}\n
@@ -172,34 +172,56 @@ return(result)}
 #--------------------------------------------------------------------------------------------------------------------
 unusual.alleles.per.table <- function(table,afreq){
 	# finds unusual alleles in any specific table, (provided in original listed format)
-	rare <- data.frame(locus=NULL,allele=NULL,EA1.freq=NULL,EA3.freq=NULL,EA4.freq=NULL,error=NULL)
+	# Get names of populations in database
+	pops = colnames(afreq)[4:ncol(afreq)]	# first 3 columns are Marker, Allele, BP
+	rare <- matrix(ncol=3+length(pops),nrow=0)
+	colnames(rare) = c("locus","allele",paste(pops,".freq",sep=""),"error")
 	loci <- colnames(table); loci <- loci[loci!='queried']# ref table has a unwanted column 'queried'
-
-	for(locus in loci){
-		if(!locus%in%afreq$Marker){ # check the loci are even in the database
-			frame <- data.frame(locus=locus, allele=NA,EA1.freq=NA,EA3.freq=NA,EA4.freq=NA,error='Entire locus missing from database')
-            	rare <- rbind(rare, frame)
+	for(locus in loci)
+		{
+		if(!locus%in%afreq$Marker)
+			{ # check the loci are even in the database
+			frame <- matrix(c(locus,NA,rep(NA,times=length(pops),"Entire locus missing from database")),ncol=3+length(pops))
+			colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
+		        rare <- rbind(rare, frame)
 			}
 
-		if(locus%in%afreq$Marker){ # only continue if the locus is in the database
-			for(row in 1:nrow(table)){
+		if(locus%in%afreq$Marker)
+			{ # only continue if the locus is in the database
+			for(row in 1:nrow(table))
+				{
 				alleles <- unique(unlist(table[row,locus]))
-				for(allele in alleles[!is.na(alleles)]){ # ignore NAs in the csv file
+				for(allele in alleles[!is.na(alleles)])
+					{ # ignore NAs in the csv file
 					condition <- afreq$Marker==locus & afreq$Allele==allele
 					x <- afreq[condition,]
-					if(nrow(x)==1){ # if the allele is present once in the database (should be!)
-						if(x$EA1<2 | x$EA3<2 | x$EA4<2) {
-            					frame <- data.frame(locus=locus, allele=allele, EA1.freq=x[,4], EA3.freq=x[,5], EA4.freq=x[,6], error=NA)
-            					rare <- rbind(rare, frame)}
-          						}
-					if(nrow(x)==0){ # if the allele is absent from database it is probably a typo	
-							frame <- data.frame(locus=locus, allele=allele, EA1.freq=NA,EA3.freq=NA,EA4.freq=NA ,error='Allele absent from database,check for typo')
+					if(nrow(x)==1)
+						{ # if the allele is present once in the database (should be!)
+						# get whether each population is less than 2
+						sizeCondition = NULL
+						for(i in 1:length(pops))
+							{
+							eval(parse(text=paste("sizeCondition = c(sizeCondition, x$",pops[i],"<2)",sep="")))
+							}
+						if(any(sizeCondition)) 
+							{
+							frame <- matrix(c(locus,allele,x[4:length(x)],'NA'),ncol=3+length(pops))
+							colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
+        	    					rare <- rbind(rare, frame)
+							}
+        					}
+					if(nrow(x)==0)
+						{ # if the allele is absent from database it is probably a typo	
+						frame <- matrix(c(locus,allele,rep(NA,times=length(pops),"Allele absent from database,check for typo")),ncol=3+length(pops))
+						colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
             					rare <- rbind(rare, frame)
-          						}
-					if(nrow(x)>1){ # if the allele is more than once there is a problem with the database!	
-							frame <- data.frame(locus=locus,allele=allele,EA1.freq=NA,EA3.freq=NA,EA4.freq=NA ,error='Allele present multiple times in database')
+          					}
+					if(nrow(x)>1)
+						{ # if the allele is more than once there is a problem with the database!
+						frame <- matrix(c(locus,allele,rep(NA,times=length(pops),"Allele present multiple times in database")),ncol=3+length(pops))
+						colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
             					rare <- rbind(rare, frame)
-          						}
+          					}
         				}  # loop over alleles
      				} # loop over replicates
 			}} # loop over loci				
@@ -216,7 +238,7 @@ unusual.alleles <- function(genetics){
 	t3.tmp <- unusual.alleles.per.table(genetics$uncData,genetics$afreq)
 	t3 <- cbind(data.frame(source=rep('Crime scene uncertain',nrow(t3.tmp))),t3.tmp)
 	table <- rbind(t1,t2,t3)
-	if(nrow(table)==0)table <- data.frame(status='No unusual alleles present')
+	if(nrow(table)==0)table <- data.frame(status='no unusual alleles present')
 return(table)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -229,7 +251,7 @@ csp.table.reformatter <- function(genetics){
 		table <- rbind(table,table.unc[n,])
 		}
 	colnames(table) <- colnames(genetics$cspData)
-	extra <- data.frame(rep=rep(1:genetics$nrep,each=2),status=rep(c("certain","uncertain"),genetics$nrep))
+	extra <- data.frame(run=c(rbind(1:genetics$nrep,rep(NA,genetics$nrep))),status=rep(c("certain","uncertain"),genetics$nrep))
 	combined <- cbind(extra,table)
 return(combined)}
 
@@ -262,15 +284,17 @@ hypothesis.generator <- function(genetics){
 	unknowns <- minU:maxU
 	N <- length(unknowns)
 	dropins <- numeric(N)
+	dropins.logic <- character(N)
 	recommendation <- character(N)
 	for(n in 1:N){
 		dropins[n] <- sum(pmax(0,rep+unrep-2*unknowns[n]))
-		if(dropins[n]<=2)recommendation[n]<-"strongly recommended"
+		if(dropins[n]<=2)recommendation[n]<-"recommended"
 		if(dropins[n]==3)recommendation[n]<- "worth considering"
 		if(unknowns[n]==3)recommendation[n]<-"Can only be evaluated by removing the additional U from defence"
 		if(unknowns[n]>3)recommendation[n]<-"Too many U's to evaluate"
 		}
-	result <- data.frame(nUnknowns=unknowns, doDropin=dropins, Recommendation=recommendation)
+	dropins.logic <- as.character(dropins!=0)
+	result <- data.frame(nUnknowns=unknowns, doDropin=dropins.logic, Recommendation=recommendation)
 return(result)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -446,10 +470,10 @@ estimate.csp <- function(refData, cspData) {
 			}
   		}
 	if(nrep==1)  result[, nrep+1] <- result[, nrep]
-	else         result[, nrep+1] <- round.1(rowSums(result)/nrep)
+	else         result[, nrep+1] <- round.0(rowSums(result)/nrep)
    
 	# Reorders rows 
-	result <- round.1(result[order(result[, nrep+1], decreasing=T), ])
+	result <- round.0(result[order(result[, nrep+1], decreasing=T), ])
 return(result)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -512,29 +536,49 @@ summary.helper <- function(refAlleles,cspAlleles){
 		if(condition==1)unrep <- c(unrep,allele)
 		if(condition==0)absent <- c(absent,allele)
 		}
-
-	# copy objects to avoid cascading changes
-	rep.rtf <- rep.latex <- rep
-	unrep.rtf <- unrep.latex <- unrep
-	absent.rtf <- absent.latex <- absent
 	
-	# separate by commas, and apply rtf, such that replicated=bold, and unreplicated=italic
-	if(!is.null(rep.rtf))rep.rtf <- paste('{\\b ',paste(rep.rtf,collapse=','),'}',sep='')
-	if(!is.null(unrep.rtf))unrep.rtf <- paste(unrep.rtf,collapse=',')
-	if(!is.null(absent.rtf))absent.rtf <- paste('{\\i ',paste(absent.rtf,collapse=','),'}',sep='')
-	rtf <- paste(c(rep.rtf,unrep.rtf,absent.rtf),collapse=',')
+	# separate by commas, add escape functions such that replicated=bold, and unreplicated=italic, absent=box (underline in rtf)
+	# different codes for rtf and latex
+	rep.rtf <- rep.latex <- unrep.rtf <- unrep.latex <- absent.rtf <- absent.latex <- NULL
 
-	# separate by commas, and apply latex, such that replicated=bold, and unreplicated=italic
-	if(!is.null(rep.latex))rep.latex <- paste('{\\bf',paste(rep.latex,collapse=','),'}',sep='')
-	# previous key was italic(actually 'emphasis') for unreplicated, a box (fx) for absent
-	#if(!is.null(unrep.latex))unrep.latex <- paste('{\\em',paste(unrep.latex,collapse=','),'}',sep='')
-	#if(!is.null(absent.latex))absent.latex <- paste('{\\fx',paste(absent.latex,collapse=','),'}',sep='')
-	# new assignments are consistent with rtf reports
-	#if(!is.null(unrep.latex))unrep.latex <- paste('{\\rm',paste(unrep.latex,collapse=','),'}',sep='')
-	#if(!is.null(absent.latex))absent.latex <- paste('{\\it',paste(absent.latex,collapse=','),'}',sep='')
+	if(!is.null(rep)){
+		rep.rtf <- paste('\\B',paste(rep,collapse=','),'}',sep='')
+		rep.latex <- paste('\\textbf{',paste(rep,collapse=','),'}',sep='')
+		}
+	if(!is.null(unrep)){
+		unrep.rtf <- paste('\\I',paste(unrep,collapse=','),'}',sep='')
+		unrep.latex <- paste('\\textit{',paste(unrep,collapse=','),'}',sep='')
+		}
+	if(!is.null(absent)){
+		absent.rtf <- paste('\\X',paste(absent,collapse=','),'}',sep='')
+		absent.latex <- paste('\\fbox{',paste(absent,collapse=','),'}',sep='')
+		}
+
+	rtf <- paste(c(rep.rtf,unrep.rtf,absent.rtf),collapse=',')
 	latex <- paste(c(rep.latex,unrep.latex,absent.latex),collapse=',')
 
 return(list(rtf=rtf,latex=latex,rep=length(rep),unrep=length(unrep)))}
+
+#--------------------------------------------------------------------------------------------------------------------
+rtf.formater <- function(file){
+	# Think of this function as a debugger for the rtf functions.
+	# 1. 'TRUE' and 'FALSE' are irritatingly converted into 'Yes' and 'No'
+	# 2. the addTable() function in package rtf uses the text length to choose the column width. This means that the 
+	# additional escape characters to encode bold or italic or boxes causes havoc, making those columns too wide.
+	# This inelegant solution uses my own invented escape characters \B for bold, \I for italic and \X for box, 
+	# to keep the extra text to a minimum. This function then converts to the correct rtf coding AFTER the document is created.
+	# note the additional '\' is required in R to escape the '\' in rtf
+	data <- readLines(file)
+	for(n in 1:length(data)){
+		line <- data[n]
+		line <- gsub('\\B','{\\b ',line,fixed=T)
+		line <- gsub('\\I','{\\i ',line,fixed=T)
+		line <- gsub('\\X','{\\chbrdr\\brdrs ',line,fixed=T)
+		line <- gsub('Yes','TRUE',line,fixed=T)
+		line <- gsub('No','FALSE',line,fixed=T)
+		data[n] <- line
+		}
+	write(data,file=file)}
 
 #--------------------------------------------------------------------------------------------------------------------
 overall.likelihood.table.reformatter <- function(prosecutionResults,defenceResults){
@@ -603,7 +647,7 @@ dropDeg <- function(hypothesis,results,genetics){
 	if(nU>0)for(n in 1:nU)Names <- c(Names,paste('U',n,sep=''))
 
 	# column names for the table
-	runNames = c();for(rName in 1:genetics$nrep)runNames[rName]=paste('Dropout',paste('(Rep ',rName,')',sep=''))
+	runNames = c();for(rName in 1:genetics$nrep)runNames[rName]=paste('Dropout',paste('(Run ',rName,')',sep=''))
 
 	# dropout values
 	h <- h1 <- round.3(calc.dropout(results, hypothesis))	
@@ -690,7 +734,7 @@ spacer <- function(doc,n=1) for(x in 1:n)addNewLine(doc) # adds blank lines
 fs0 <- 26 # font size for header (main)
 fs1 <- 20 # font size for header (sub1)
 fs2 <- 15 # font size for header (sub2)
-
+fs3 <- 8 # tiny, for the big tables
 #--------------------------------------------------------------------------------------------------------------------
 common.report.section <- function(names,genetics){
 	# objects common to both the allele report and the final output report are done once here, for consistency, and saves repeating code
@@ -711,28 +755,26 @@ common.report.section <- function(names,genetics){
 
 	addHeader(doc, "Data provided by forensic scientist", TOC.level=1,font.size=fs1)
 	addHeader(doc, "Crime scene profiles (CSP)",TOC.level=2,font.size=fs2)
-	addTable(doc, csp.table.reformatter(genetics),col.justify='C', header.col.justify='C',font.size=8)
+	addTable(doc, csp.table.reformatter(genetics),col.justify='C', header.col.justify='C',font.size=fs3)
 	spacer(doc,3)
 
 	addHeader(doc, "Reference profiles", TOC.level=2, font.size=fs2 )
-	addTable(doc, reference.table.reformatter(genetics), col.justify='C', header.col.justify='C',font.size=8)
+	addTable(doc, reference.table.reformatter(genetics), col.justify='C', header.col.justify='C',font.size=fs3)
 	spacer(doc,1)
-	addParagraph( doc, "Assessed using the 'certain' allelic designations only." )
-	addParagraph(doc, "{\\b replicated alleles}" )
-	addParagraph(doc, "unreplicated alleles" )
-	addParagraph(doc, "{\\i absent alleles}" )
-	addPageBreak( doc, width=11,height=8.5,omi=c(1,1,1,1))
+	addParagraph(doc, "Alleles that are \\Breplicated}, \\Iunreplicated} or \\Xabsent} in the crime scene profile, using the certain designations only." ) # will use rtf.formater() to convert '\\B','\\I' and '\\X' into rtf encoding
+	spacer(doc,3)
 
 	addHeader(doc, "Summary", TOC.level=1,font.size=fs1)
 	addHeader(doc, "Unattributable alleles", TOC.level=2, font.size=fs2)
 	plot.function <- unattributable.plot.maker(genetics)
-	addPlot( doc, plot.fun = print, width = 10, height = 3.5, x = plot.function )
-
-	addParagraph( doc, "The number of 'certain' alleles that cannot be attributed to a known profile.")
+	addPlot( doc, plot.fun = print, width = 9, height = 2.8, x = plot.function )
+	addParagraph( doc, "The number of 'certain' alleles that cannot be attributed to the known profile(s).")
 	spacer(doc,3)
 
 	addHeader(doc, "Unusual alleles", TOC.level=2, font.size=fs2 )
 	addTable(doc, unusual.alleles(genetics), col.justify='C', header.col.justify='C')
+	spacer(doc,1)
+	addParagraph( doc, "Alleles are automatically checked against the database. An error will be reported if an allele is absent from the database, or present more than once, or if a locus is absent.")
 	spacer(doc,3)
 
 	addHeader(doc, "Approximate representation", TOC.level=2, font.size=fs2)
@@ -764,14 +806,16 @@ allele.report <- function(admin,file=NULL){
 	addTable(doc, hypothesis.generator(genetics), col.justify='C', header.col.justify='C')
 	spacer(doc,1)
 	addParagraph( doc, "Recommended values for 'nUnknowns', choose from 0,1 or 2 (likeLTD automatically adds and additional unknown X to the defence hypothesis in place of the queried profile Q).")
-	addParagraph( doc, "Recommended values for 'doDropin', choose from T or F.")
+	addParagraph( doc, "Recommended values for 'doDropin', choose from 'TRUE' or 'FALSE'.")
 	addParagraph( doc, "All the attributable alleles must either come from an unknown or dropin.")
 	spacer(doc,3)
 
 	addHeader(doc, "System information", TOC.level=1,font.size=fs1)
 	addTable(doc,  system.info(), col.justify='L', header.col.justify='L')
 
-done(doc)}
+done(doc)
+rtf.formater(names$filename)
+}
 
 #--------------------------------------------------------------------------------------------------------------------
 output.report <- function(prosecutionHypothesis,defenceHypothesis,prosecutionResults,defenceResults,file=NULL){
@@ -825,7 +869,9 @@ output.report <- function(prosecutionHypothesis,defenceHypothesis,prosecutionRes
 	addHeader(doc, "System information", TOC.level=1,font.size=fs1)
 	addTable(doc,  system.info(), col.justify='L', header.col.justify='L')
 
-done(doc)}
+done(doc)
+rtf.formater(names$filename)	
+}
 #--------------------------------------------------------------------------------------------------------------------
 
 
