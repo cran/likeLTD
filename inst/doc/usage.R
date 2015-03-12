@@ -20,11 +20,12 @@
 ##                        caseName)
 ##   args = list(
 ##     databaseFile = NULL,
+##     linkageFile = NULL,
 ##     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
 ##     refFile      = file.path(datapath, 'hammer-reference.csv'),
 ##     nUnknowns    = 0,
 ##     doDropin     = TRUE,
-##     ethnic       = "EA1",
+##     ethnic       = "NDU1",
 ##     adj          = 1.0,
 ##     fst          = 0.02,
 ##     relatedness  = c(0, 0)/4
@@ -42,7 +43,7 @@
 
 
 ###################################################
-### code chunk number 4: usage.Rnw:79-88 (eval = FALSE)
+### code chunk number 4: usage.Rnw:80-89 (eval = FALSE)
 ###################################################
 ##   defenceModel(rcont=c(1, 1e-8, 1.63), 
 ##                degradation=c(10^-2.27, 10^-2.74, 10^-2.47),
@@ -97,11 +98,12 @@
                        caseName)
   args = list(
     databaseFile = NULL,
+    linkageFile = NULL,
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 0,
     doDropin     = TRUE,
-    ethnic       = "EA1",
+    ethnic       = "NDU1",
     adj          = 1.0,
     fst          = 0.02,
     relatedness  = c(0, 0)/4
@@ -197,11 +199,12 @@
                        caseName)
   args = list(
     databaseFile = NULL,
+    linkageFile = NULL,
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 0,
     doDropin     = TRUE,
-    ethnic       = "EA1",
+    ethnic       = "NDU1",
     adj          = 1.0,
     fst          = 0.02,
     relatedness  = c(0, 0)/4
@@ -271,11 +274,12 @@
                        caseName)
   args = list(
     databaseFile = NULL,
+    linkageFile = NULL,
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 0,
     doDropin     = TRUE,
-    ethnic       = "EA1",
+    ethnic       = "NDU1",
     adj          = 1.0,
     fst          = 0.02,
     relatedness  = c(0, 0)/4

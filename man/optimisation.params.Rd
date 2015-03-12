@@ -4,7 +4,7 @@
 \usage{optimisation.params(hypothesis, verbose=FALSE, fixed=NULL,
                            logObjective=TRUE, logDegradation=TRUE,
                            arguments=NULL, zero=0, throwError=FALSE,
-                           withPenalties=TRUE, objective=NULL, iterMax=75, 
+                           withPenalties=TRUE, doLinkage=TRUE,objective=NULL, iterMax=75, 
                            likeMatrix=FALSE,\dots)}
 \arguments{
   \item{hypothesis}{Hypothesis from which to perform maximization}
@@ -21,6 +21,12 @@
   \epsilon}{alpha +/- epsilon} that exclude the bound itself}
   \item{throwError}{If TRUE, throws an error if the result is infinite}
   \item{withPenalties}{If TRUE, then penalties are evaluated and used}
+  \item{doLinkage}{Logical indicating whether or not to apply a correction for linked loci.
+                    This correction is only applied when Q and X are assumed to be siblings
+                    i.e. \code{hypothesis$relatedness=c(0.5,0.25)}. This multiplies the 
+                    prosecution likelihood by \eqn{IMP_L/IMP_U}, where \eqn{IMP_L} is the inverse match
+                    probability with linkage taken into account, and \eqn{IMP_U} is the same
+                    but without linkage taken into account.}
   \item{objective}{Objective function produced from create.likelihood.vectors}
   \item{iterMax}{Number of iterations to run the optimisation for}
   \item{likeMatrix}{Whether to return likelihoods for every genotype combination, or 
@@ -31,20 +37,16 @@
   \code{nUnknowns}}
 }
 \value{
-  \item{par}{A vector of initial (nuisance) parameters}
   \item{fn}{The objective function}
   \item{lower}{Lower bounds for the parameters}
   \item{upper}{Upper bounds for the parameters}
-  \item{control}{Control parameters for \code{stats::optim}}
-  \item{method}{\dQuote{L-BFGS-B}}
-  \item{hessian}{\code{FALSE}}
+  \item{control}{Control parameters for \code{DEoptim::DEoptim}}
 }
-\description{Creates a list of parameters to use with \code{stats::optim}.}
+\description{Creates a list of parameters to use with \code{DEoptim::DEoptim}.}
 \details{
   Starting from the hypothesis, it creates an list of arguments which can be
-  applied to \code{stats::optim} to obtain the maximum (log-)likelihood of that
-  hypothesis. By default, it provides the input for using the \dQuote{L-BFGS-B} of
-  \code{optim}, including the upper and lower bounds of the nuisance parameter. 
+  applied to \code{DEoptim::DEoptim} to obtain the maximum (log-)likelihood of that
+  hypothesis. 
 
   It accepts a number of customization:
     

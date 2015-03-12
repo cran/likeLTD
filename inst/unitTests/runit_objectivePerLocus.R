@@ -89,6 +89,7 @@ test_TH01.regression.with.dropin = svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 1,
@@ -96,7 +97,8 @@ test_TH01.regression.with.dropin = svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(0.0, 0)
+    relatedness  = c(0.0, 0),
+    combineRare  = FALSE
   )
   if(! "defence.hypothesis" %in% ls(.GlobalEnv))
     defence.hypothesis <- getFromNamespace("defence.hypothesis", "likeLTD")
@@ -134,6 +136,7 @@ test_TH01.regression.no.dropin = svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 1,
@@ -141,7 +144,8 @@ test_TH01.regression.no.dropin = svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(0.0, 0)
+    relatedness  = c(0.0, 0),
+    combineRare  = FALSE
   )
   if(! "defence.hypothesis" %in% ls(.GlobalEnv))
     defence.hypothesis <- getFromNamespace("defence.hypothesis", "likeLTD")
@@ -178,6 +182,7 @@ test_D18.regression.with.dropin = svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 1,
@@ -185,7 +190,8 @@ test_D18.regression.with.dropin = svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(0.0, 0)
+    relatedness  = c(0.0, 0),
+    combineRare  = FALSE
   )
   if(! "defence.hypothesis" %in% ls(.GlobalEnv))
     defence.hypothesis <- getFromNamespace("defence.hypothesis", "likeLTD")

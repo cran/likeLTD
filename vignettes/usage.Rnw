@@ -42,11 +42,12 @@ maximization of the likelihood nor any information which needs to be computed.
                        caseName)
   args = list(
     databaseFile = NULL,
+    linkageFile = NULL,
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 0,
     doDropin     = TRUE,
-    ethnic       = "EA1",
+    ethnic       = "NDU1",
     adj          = 1.0,
     fst          = 0.02,
     relatedness  = c(0, 0)/4

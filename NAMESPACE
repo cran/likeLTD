@@ -31,6 +31,7 @@ export(output.report)
 
 export(DEoptimLoop)
 export(evaluate)
+export(evaluate.from.interim)
 export(get.likely.genotypes)
 
 importFrom(DEoptim, DEoptim)
@@ -41,4 +42,8 @@ importFrom(ggplot2, ggplot)
 importFrom(tcltk, tkProgressBar)
 importFrom(tcltk, setTkProgressBar)
 import(rtf)
+
+
+
+
 

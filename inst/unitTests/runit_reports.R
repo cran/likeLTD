@@ -88,7 +88,7 @@ checkNoException <- function(expr, msg="") {
     system.file(Reduce(file.path, path_vector), package="likeLTD")
   }
   dataFiles = list.files(system.file("data",package="likeLTD"))
-  databaseName = dataFiles[grep("lgc-allele-freqs-wbp",dataFiles)]
+  databaseName = dataFiles[grep("DNA17-db",dataFiles)]
   
   databaseFile = find.package.files(c("data", databaseName))
   cspFile    = find.package.files(c("extdata", "hammer", "hammer-CSP.csv"))
@@ -114,7 +114,7 @@ checkNoException <- function(expr, msg="") {
 
   # Checks it packs the data as expected.
   admin <- correct()
-  checkEquals(length(admin), 5)
+  checkEquals(length(admin), 7)
   checkEquals(admin$caseName, caseName)
   checkEquals(admin$databaseFile, databaseFile)
   checkEquals(admin$cspFile, cspFile)

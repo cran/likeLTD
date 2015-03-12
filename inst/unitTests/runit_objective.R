@@ -48,6 +48,7 @@ test_regression1 <- svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 0,
@@ -55,7 +56,8 @@ test_regression1 <- svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(0.0, 0)
+    relatedness  = c(0.0, 0),
+    combineRare  = FALSE
   )
   if(! "defence.hypothesis" %in% ls(.GlobalEnv))
     defence.hypothesis <- getFromNamespace("defence.hypothesis", "likeLTD")
@@ -68,7 +70,7 @@ test_regression1 <- svTest(function() {
                  1.76350988087800e-03, 1.43444739873622e-08,
                  9.09495530595362e-06, 7.11137407679358e-08,
                  3.01744911691531e-04, 6.89041414610852e-03)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
   penalties = c(0.00303192703176332, 0.00303192703176332, 0.00303192703176332,
                 0.00303192703176332, 0.00303192703176332, 0.00303192703176332, 
@@ -92,6 +94,7 @@ test_regression.zerounknown <- svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 0,
@@ -99,7 +102,8 @@ test_regression.zerounknown <- svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(0.0, 0)
+    relatedness  = c(0.0, 0),
+    combineRare  = FALSE
   )
   defenceHypothesis = do.call(defence.hypothesis, args)
   prosecutionHypothesis = do.call(prosecution.hypothesis, args)
@@ -116,7 +120,7 @@ test_regression.zerounknown <- svTest(function() {
                  5.58990000167620e-01, 2.58579653708631e-05,
                  6.88667211400942e-07, 5.73149656581839e-02,
                  2.70886382744855e-02, 3.64303077108431e-03)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
@@ -133,7 +137,7 @@ test_regression.zerounknown <- svTest(function() {
                  2.47293709587760e-04, 5.90787709164540e-02, 9.97729081224379e-07,
                  6.25814358291258e-06, 1.04230422586896e-04, 1.46838789834590e-02,
                  1.43741838557565e-03)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
@@ -145,6 +149,7 @@ test_regression.oneunknown <- svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 1,
@@ -152,7 +157,8 @@ test_regression.oneunknown <- svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(0.0, 0)
+    relatedness  = c(0.0, 0),
+    combineRare  = FALSE
   )
   defenceHypothesis = do.call(defence.hypothesis, args)
   prosecutionHypothesis = do.call(prosecution.hypothesis, args)
@@ -169,7 +175,7 @@ test_regression.oneunknown <- svTest(function() {
                  9.37696749226556e-04, 3.54990168257584e-01, 3.61714632221897e-05, 
                  2.78024377866913e-06, 7.42370399489160e-02, 2.15249772203121e-02, 
                  4.27467268573391e-04)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
@@ -187,7 +193,7 @@ test_regression.oneunknown <- svTest(function() {
                  3.71369198539134e-04, 7.20410130310739e-02, 1.08896493758788e-06,
                  2.81245481065190e-06, 1.83320557026132e-04, 1.94351600773495e-02,
                  5.75805705402794e-04)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
@@ -199,6 +205,7 @@ test_regression.relatedness <- svTest(function() {
   datapath     = system.file(file.path('extdata', 'hammer'), package="likeLTD")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
     refFile      = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns    = 1,
@@ -206,7 +213,8 @@ test_regression.relatedness <- svTest(function() {
     ethnic       = "EA1",
     adj          = 1.0,
     fst          = 0.02,
-    relatedness  = c(1, 1)/4
+    relatedness  = c(1, 1)/4,
+    combineRare  = FALSE
   )
   defenceHypothesis = do.call(defence.hypothesis, args)
   prosecutionHypothesis = do.call(prosecution.hypothesis, args)
@@ -216,36 +224,40 @@ test_regression.relatedness <- svTest(function() {
                            0.543478260869565),
                    dropin = 0.108695652173913,
                    degradation=rep(3e-3, 4),
-                   locusAdjustment=1,
+                   locusAdjustment=rep(1,times=10),
                    power=-4.35,
                    dropout=c(0.15, 0.01) )
-  objectives = c(5.24609987450467e-05, 1.28369768074416e-01, 3.19566044368621e-02, 
-                 9.37696749226556e-04, 3.54990168257584e-01, 3.61714632221897e-05, 
-                 2.78024377866913e-06, 7.42370399489160e-02, 2.15249772203121e-02, 
-                 4.27467268573391e-04)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  objectives = c(5.2460998745046723702e-05, 1.2836976807441610737e-01, 3.1956604436862108554e-02, 
+9.3769674922655570342e-04, 3.5499016825758356042e-01, 3.6171463222189653881e-05, 
+2.7802437786691249654e-06, 7.4237039948916033749e-02, 2.1524977220312099119e-02, 
+4.2746726857339074597e-04)
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
+  penalty = 2.6078646479706
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
-  checkEquals(prod(result$objectives * result$penalties), 1.9762409429182e-25)
+  checkEquals(prod(result$objectives * result$penalties), prod(objectives * penalty), checkNames=FALSE)
+  # old result was 1.9762409429182e-25 (different penalties)
 
   likelihood <- create.likelihood.vectors(defenceHypothesis)
   arguments = list(rcont=c(0.923913043478261, 0.565217391304348, 1.0,
                            0.543478260869565),
                    dropin = 0.108695652173913,
                    degradation=rep(3e-3, 4),
-                   locusAdjustment=1,
+                   locusAdjustment=rep(1,times=10),
                    power=-4.35,
                    dropout=c(0.175, 0.105) )
   objectives = c(1.80216091977255e-03, 3.60032286625716e-02, 3.91628936030574e-02,
                  1.35921436545295e-03, 1.70921706383154e-01, 6.80165107428541e-06,
                  2.21989141657041e-06, 1.31481378540658e-02, 5.01713248581239e-02,
                  2.04269633599325e-03)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
+  penalty = 2.607865
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
-  checkEquals(prod(result$objectives * result$penalties), 5.75589320779353e-25)
+  checkEquals(prod(result$objectives * result$penalties), prod(objectives * penalty), checkNames=FALSE)
+  # old result was 5.75589320779353e-25 (different penalties)
 
   defenceHypothesis$relatedness = c(0.5, 0.75)/4
   likelihood <- create.likelihood.vectors(defenceHypothesis)
@@ -255,16 +267,18 @@ test_regression.relatedness <- svTest(function() {
                            0.543478260869565),
                    dropin = 0.108695652173913,
                    degradation=rep(3e-3, 4),
-                   locusAdjustment=1,
+                   locusAdjustment=rep(1,times=10),
                    power=-4.35,
                    dropout=c(0.175, 0.105) )
   objectives = c(1.42928505786127e-03, 2.89308741853859e-02, 2.91781768719226e-02,
                  1.07691206144212e-03, 1.40960034434433e-01, 5.21398235786849e-06,
                  2.38633107944920e-06, 9.76030592868755e-03, 4.11927291159638e-02,
                  1.61542861999956e-03)
-  names(objectives) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
+  names(objectives) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
                         "TH01", "FGA")
+  penalty = 2.607865
   result <- do.call(likelihood, arguments)
   checkEquals(result$objectives, objectives)
-  checkEquals(prod(result$objectives * result$penalties), 7.07569814196917e-26)
+  checkEquals(prod(result$objectives * result$penalties), prod(objectives * penalty), checkNames=FALSE)
+  # old result was 7.07569814196917e-26 (different penalties)
 })

@@ -44,5 +44,5 @@
   \eqn{p^{\frac{1}{n}}}{p^(1/n)} is applied, where \eqn{p} is the penalty and
   \eqn{n} the number of loci.
 }
-\seealso{create.likelyhood.vectors, create.likelihood.log, create.likelyhood,
+\seealso{create.likelihood.vectors, create.likelihood.log, create.likelihood,
          Objective Functions}

@@ -55,6 +55,20 @@ read.known.profiles = function(path) {
   result
 }
 
+# Reads linkage information from file.
+# Documentation is in man directory
+load.linkage.info <- function(path=NULL) {
+	# Loads allele database
+	# Documentation is in man directory.
+	if(is.null(path)) { # Load default database
+	dummyEnv <- new.env()
+	data('linkage', package='likeLTD', envir=dummyEnv)
+	return(dummyEnv[['linkage']])
+	}
+	if(!file.exists(path)) stop(paste(path, "does not exist."))
+	read.table(path, sep="\t", header=TRUE,as.is=TRUE)
+	}
+
 # Should check that hypothesis is syntactically correct
 # This means matrices as opposed to lists, so on and so forth.
 # It does not mean it the input should make any sort of sense.
@@ -195,14 +209,38 @@ transform.to.locus.centric = function(hypothesis) {
   result
 }
 
+# combine rare alleles into one joined allele for a single locus
+combine.rares.locus = function(alleleDb,cspProfile,uncProfile,knownProfiles,queriedProfile,rareThreshold=0.05)
+    {
+    # index of alleles not in csp, unc, knowns or queried, and also probability < rareThreshold
+    index = which(!rownames(alleleDb)%in%c(unlist(uncProfile),unlist(cspProfile),unlist(knownProfiles),unlist(queriedProfile))&alleleDb[,1]<rareThreshold)
+    if(length(index)>0)
+        {
+        # remove indexed alleles, new allele has sum of probabilities, and mean of BP
+        alleleDb = rbind(alleleDb[-index,],c(sum(alleleDb[index,1]),mean(alleleDb[index,2]))) 
+        rownames(alleleDb)[nrow(alleleDb)] = "rares"
+        }
+    return(alleleDb)   
+    }
+
+# combine rare alleles into one joined allele for all loci
+combine.rares = function(alleleDb, cspProfile, uncProfile, knownProfiles, queriedProfile,rareThreshold=0.05)
+    {
+    loci = colnames(cspProfile)
+    sapply(loci,FUN=function(x) combine.rares.locus(alleleDb[[x]],cspProfile[,x],uncProfile[,x],knownProfiles[,x],queriedProfile[,x],rareThreshold=rareThreshold),simplify=FALSE)
+    }
+
 
 agnostic.hypothesis <- function(cspProfile, uncProfile, knownProfiles,
                                 queriedProfile, alleleDb, ethnic='EA1',
-                                adj=1e0, fst=0.02) {
+                                adj=1e0, fst=0.02, combineRare=FALSE, 
+                                rareThreshold=0.05) {
   # Helper function to figure out the input of most hypothesis.
   #
   # Basically, this groups operations that are done the same by defence and
   # prosection. 
+
+ if(!ethnic%in%colnames(alleleDb)) stop("Chosen race code not included in database")
 
   # Read database and filter it down to requisite ethnicity and locus. 
   alleleDb = ethnic.database(ethnic, colnames(cspProfile), alleleDb)
@@ -226,7 +264,10 @@ agnostic.hypothesis <- function(cspProfile, uncProfile, knownProfiles,
                                  queriedProfile[1, colnames(cspProfile), 
                                                 drop=FALSE],
                                  adj=adj, fst=fst )
+  # combine rare alleles into a single allele
+  if(combineRare) alleleDb = combine.rares(alleleDb, cspProf, uncProf, knownProfiles, queriedProfile, rareThreshold)
 
+    
   # Construct all profiles as arrays of  
   list(cspProfile=cspProf, uncProf=uncProf, dropoutProfs=dropoutProfs,
        alleleDb=alleleDb,
@@ -235,13 +276,23 @@ agnostic.hypothesis <- function(cspProfile, uncProfile, knownProfiles,
 
 # Creates prosecution hypothesis.
 # Documentation is in man directory.
-prosecution.hypothesis <- function(cspFile, refFile, ethnic='EA1',
+prosecution.hypothesis <- function(cspFile, refFile, ethnic='NDU1',
                                    nUnknowns=0, adj=1e0, fst=0.02,
-                                   databaseFile=NULL, relatedness=c(0,0), 
-                                   doDropin=FALSE, ...) {
-  alleleDb = load.allele.database(databaseFile)
+                                   databaseFile=NULL, linkageFile=NULL, relatedness=c(0,0), 
+                                   doDropin=FALSE, combineRare=TRUE,
+				   rareThreshold=0.05, kit=NULL,...) {
+  if(is.null(databaseFile)&is.null(kit)) kit = "DNA17"
+  alleleDb = load.allele.database(databaseFile,kit)
   cspProfile = read.csp.profile(cspFile)
   uncProfile = read.unc.profile(cspFile)
+  if(identical(relatedness,c(0.5,0.25)))
+	{
+  	linkageInfo = load.linkage.info(linkageFile)
+	rownames(linkageInfo) = linkageInfo[,1]
+	linkageInfo = linkageInfo[,-1]
+	linkIndex = which(colnames(linkageInfo)%in%colnames(cspProfile))
+	linkageInfo = linkageInfo[linkIndex,linkIndex]
+	}
   knownProfiles = read.known.profiles(refFile)
   if(sum(unlist(knownProfiles[, "queried"])) != 1)
     stop("Expect one queried profile on input.")
@@ -253,7 +304,8 @@ prosecution.hypothesis <- function(cspFile, refFile, ethnic='EA1',
 
   result = agnostic.hypothesis(cspProfile, uncProfile, knownProfiles,
                                queriedProfile, alleleDb, ethnic=ethnic,
-                               adj=adj, fst=fst)
+                               adj=adj, fst=fst, combineRare=combineRare,
+				rareThreshold=rareThreshold)
 
   # If queried profile is subject to dropout, then it should be the reference
   # individual. Otherwise, the first individual subject to dropout will be set
@@ -277,6 +329,11 @@ prosecution.hypothesis <- function(cspFile, refFile, ethnic='EA1',
   result[["cspFile"]] = cspFile
   result[["refFile"]] = refFile
   result[["databaseFile"]] = databaseFile
+  result[["kit"]] = kit
+  if(identical(relatedness,c(0.5,0.25)))
+	{
+    result[["linkageInfo"]] = linkageInfo
+    }
 
   sanity.check(result) # makes sure hypothesis has right type.
   result
@@ -284,13 +341,22 @@ prosecution.hypothesis <- function(cspFile, refFile, ethnic='EA1',
 
 # Creates defence hypothesis
 # Documentation is in man directory.
-defence.hypothesis <- function(cspFile, refFile, ethnic='EA1',  nUnknowns=0,
-                               adj=1e0, fst=0.02, databaseFile=NULL, 
-                               relatedness=c(0,0), doDropin=FALSE, ...) {
-  
-  alleleDb = load.allele.database(databaseFile)
+defence.hypothesis <- function(cspFile, refFile, ethnic='NDU1',  nUnknowns=0,
+                               adj=1e0, fst=0.02, databaseFile=NULL, linkageFile=NULL, 
+                               relatedness=c(0,0), doDropin=FALSE, combineRare=TRUE, 
+			       rareThreshold=0.05, kit=NULL, ...) {
+  if(is.null(databaseFile)&is.null(kit)) kit = "DNA17"
+  alleleDb = load.allele.database(databaseFile,kit)
   cspProfile = read.csp.profile(cspFile)
   uncProfile = read.unc.profile(cspFile)
+  if(identical(relatedness,c(0.5,0.25)))
+	{
+  	linkageInfo = load.linkage.info(linkageFile)
+	rownames(linkageInfo) = linkageInfo[,1]
+	linkageInfo = linkageInfo[,-1]
+	linkIndex = which(colnames(linkageInfo)%in%colnames(cspProfile))
+	linkageInfo = linkageInfo[linkIndex,linkIndex]
+	}
   knownProfiles = read.known.profiles(refFile)
   if(sum(unlist(knownProfiles[, "queried"])) != 1)
     stop("Expect one queried profile on input.")
@@ -302,7 +368,10 @@ defence.hypothesis <- function(cspFile, refFile, ethnic='EA1',  nUnknowns=0,
 
   result = agnostic.hypothesis(cspProfile, uncProfile, knownProfiles,
                                queriedProfile, alleleDb, ethnic=ethnic,
-                               adj=adj, fst=fst) 
+                               adj=adj, fst=fst, combineRare=combineRare,
+				rareThreshold=rareThreshold) 
+
+
   result[["refIndiv"]] = nrow(result[["dropoutProfs"]]) + 1
 
   result = append(result, list(...))
@@ -316,6 +385,8 @@ defence.hypothesis <- function(cspFile, refFile, ethnic='EA1',  nUnknowns=0,
   result[["cspFile"]] = cspFile
   result[["refFile"]] = refFile
   result[["databaseFile"]] = databaseFile
+  result[["kit"]] = kit
+  if(identical(relatedness,c(0.5,0.25))) result[["linkageInfo"]] = linkageInfo
 
   sanity.check(result) # makes sure hypothesis has right type.
   result

@@ -85,6 +85,7 @@ test_novictim_regression_prosecution <- svTest(function() {
   datapath = file.path(system.file("extdata", package="likeLTD"), "novictim")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile = file.path(datapath, 'hammer-CSP.csv'),
     refFile = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns = 1,
@@ -92,7 +93,8 @@ test_novictim_regression_prosecution <- svTest(function() {
     ethnic = "EA1",
     adj = 1.0,
     fst = 0.02,
-    relatedness = c(0, 0)/4
+    relatedness = c(0, 0)/4,
+    combineRare  = FALSE
   )
 
   # Create hypothesis for defence and prosecution.
@@ -119,8 +121,8 @@ test_novictim_regression_prosecution <- svTest(function() {
              2.38667220196423e-05, 3.34391350299337e-06, 6.61358628290887e-04,
              1.66664947299532e-03, 1.54323319590758e-06, 3.89361671672519e-06,
              7.26597711768314e-03)
-  names(checks) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
-                    "TH01", "FGA")
+  names(checks) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
+                        "TH01", "FGA")
   checkEquals(newP, checks)
 })
 
@@ -129,6 +131,7 @@ test_novictim_regression_defence <- svTest(function() {
   datapath = file.path(system.file("extdata", package="likeLTD"), "novictim")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile = file.path(datapath, 'hammer-CSP.csv'),
     refFile = file.path(datapath, 'hammer-reference.csv'),
     nUnknowns = 1,
@@ -136,7 +139,8 @@ test_novictim_regression_defence <- svTest(function() {
     ethnic = "EA1",
     adj = 1.0,
     fst = 0.02,
-    relatedness = c(0, 0)/4
+    relatedness = c(0, 0)/4,
+    combineRare  = FALSE
   )
 
   # Create hypothesis for defence and prosecution.
@@ -163,7 +167,7 @@ test_novictim_regression_defence <- svTest(function() {
              2.23676993312579e-05, 1.39764825435972e-03, 6.55421895552490e-05,
              1.69972376120242e-03, 4.95286954519019e-06, 4.54379488982241e-03,
              1.34217276423583e-03)
-  names(checks) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
-                    "TH01", "FGA")
+  names(checks) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
+                        "TH01", "FGA")
   checkEquals(newD, checks)
 })

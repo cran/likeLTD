@@ -51,6 +51,7 @@ test_dropout_regression_prosecution <- svTest(function() {
   datapath = file.path(system.file("extdata", package="likeLTD"), "nodropout")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile = file.path(datapath, 'CSP.csv'),
     refFile = file.path(datapath, 'reference.csv'),
     nUnknowns = 1,
@@ -58,7 +59,8 @@ test_dropout_regression_prosecution <- svTest(function() {
     ethnic = "EA1",
     adj = 1.0,
     fst = 0.02,
-    relatedness = c(0, 0)/4
+    relatedness = c(0, 0)/4,
+    combineRare  = FALSE
   )
 
   # Create hypothesis for defence and prosecution.
@@ -82,8 +84,8 @@ test_dropout_regression_prosecution <- svTest(function() {
              0.11182655329884779, 0.06969260540520721, 0.05045585876831847,
              0.00135846108675573, 0.38503530829085297, 0.12637764623617148,
              0.00805568848771995)
-  names(checks) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
-                    "TH01", "FGA")
+  names(checks) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
+                        "TH01", "FGA")
   checkEquals(newP, checks)
 })
 
@@ -92,6 +94,7 @@ test_dropout_regression_defence <- svTest(function() {
   datapath = file.path(system.file("extdata", package="likeLTD"), "nodropout")
   args = list(
     databaseFile = NULL,
+    kit = "SGMplus",
     cspFile = file.path(datapath, 'CSP.csv'),
     refFile = file.path(datapath, 'reference.csv'),
     nUnknowns = 1,
@@ -99,7 +102,8 @@ test_dropout_regression_defence <- svTest(function() {
     ethnic = "EA1",
     adj = 1.0,
     fst = 0.02,
-    relatedness = c(0, 0)/4
+    relatedness = c(0, 0)/4,
+    combineRare  = FALSE
   )
 
   # Create hypothesis for defence and prosecution.
@@ -124,7 +128,7 @@ test_dropout_regression_defence <- svTest(function() {
              2.41384344770380e-02, 2.39365424629160e-02, 7.74146362090388e-03,
              7.62049153669593e-05, 1.22837189292898e-01, 6.98334653935746e-02,
              2.64909789599108e-03)
-  names(checks) = c("D3", "vWA", "D16", "D2", "D8", "D21", "D18", "D19",
-                    "TH01", "FGA")
+  names(checks) = c("D3S1358", "vWA", "D16S539", "D2S1338", "D8S1179", "D21S11", "D18S51", "D19S433",
+                        "TH01", "FGA")
   checkEquals(newD, checks)
 })
