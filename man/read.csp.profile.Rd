@@ -37,3 +37,18 @@ marks. Entries can be empty. The lines labeled "Uncertain" are ignored by this
 function.
 }
 \seealso{read.unc.profile, read.known.profiles}
+\examples{
+# datapath to example files
+datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
+
+# File paths and case name for allele report
+admin = pack.admin.input(
+            cspFile = file.path(datapath, 'hammer-CSP.csv'),
+            refFile = file.path(datapath, 'hammer-reference.csv'),
+            caseName = "hammer",
+	    kit= "SGMplus"
+             )
+
+# get CSP
+read.csp.profile(admin$cspFile)
+}

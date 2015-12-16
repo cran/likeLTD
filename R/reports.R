@@ -158,7 +158,6 @@ load.allele.database <- function(path=NULL,kit=NULL) {
 unattributable.plot.maker <- function(genetics){
 # define ggplot variables to avoid NOTE from CRAN
 aes <- geom_bar <- scale_fill_grey <- NULL
-
 	loci <- counts <- status <- NULL
 	plot <- ggplot(data=genetics$summary$counts, aes(x=loci,y=counts,fill=status))+
 		 geom_bar(stat='identity')+
@@ -342,6 +341,10 @@ hyp.P <- function(genetics){
 	Q <- paste(genetics$nameQ,'(Q)') 
 	U <- paste(genetics$P.hyp$nUnknowns,'U',sep='')
 	HP <- paste('Prosecution Hypothesis:',paste(c(Q,genetics$nameK,U),collapse=' + ')  )
+	if(genetics$doDropin)
+		{
+		HP = paste0(HP," + dropin")
+		}
 	if(is.null(genetics$nameK))HP <- NULL # genetics object is different for allele report or final report
 return(HP)}
 
@@ -349,6 +352,10 @@ hyp.D <- function(genetics){
 	X <- 'Unknown (X)'
 	U <- paste(genetics$D.hyp$nUnknowns-1,'U',sep='')
 	HD <- paste('Defence Hypothesis:',paste(c(X,genetics$nameK,U),collapse=' + ') )
+	if(genetics$doDropin)
+		{
+		HD = paste0(HD," + dropin")
+		}
 	if(is.null(genetics$nameK))HD <- NULL # genetics object is different for allele report or final report
 return(HD)}
 
@@ -408,6 +415,8 @@ pack.genetics.for.output.report <- function(P.hyp,D.hyp){
 	QvK <- queried.vs.known(P.hyp$refFile)
 	nameQ <- row.names(refData)[QvK]
 	nameK <- row.names(refData)[!QvK]
+	
+	doDropin = P.hyp$doDropin
 
 	output.report.genetics <- list( 
 	cspData = cspData, 
@@ -420,7 +429,8 @@ pack.genetics.for.output.report <- function(P.hyp,D.hyp){
 	nameQ = nameQ,
 	nameK = nameK, 
 	P.hyp = P.hyp,
-	D.hyp = D.hyp)  
+	D.hyp = D.hyp,
+	doDropin=doDropin)  
 return(output.report.genetics)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -590,8 +600,8 @@ overall.likelihood.table.reformatter <- function(prosecutionResults,defenceResul
 	P <- -prosecutionResults$optim$bestval
 	D <- -defenceResults$optim$bestval
 	table <- cbind(
-		round.3(data.frame(Prosecution.log10=P,Defence.log10=D,Ratio.log10=P-D)),
-		round.0(data.frame(Ratio=10^(P-D)))
+		round.1(data.frame(Prosecution.log10=P,Defence.log10=D,Ratio.log10=P-D)),
+		round.0(data.frame(Ratio=toString(signif(10^(P-D),3))))
 		)
 	table  <- t(table); colnames(table) <- 'estimate'
 	extra <- data.frame(calculation=row.names(table))
@@ -700,10 +710,10 @@ return(table)}
 
 #--------------------------------------------------------------------------------------------------------------------
 optimised.parameter.table.reformatter <- function(hypothesis,result){
-	table <- t(rbind(result$optim$bestmem,result$member$upper,result$member$lower))
+	table <- t(rbind(result$optim$bestmem,result$member$lower,result$member$upper))
 	extra <- data.frame(parameter=rownames(table))
 	combined <- round.3(cbind(extra,table))
-	colnames(combined) <- c('parameter','estimate','upper bound','lower bound')
+	colnames(combined) <- c('parameter','estimate','lower bound','upper bound')
 return(combined)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -751,6 +761,19 @@ hom <- function(pa, fst=0.02)
 
     }
 
+# homozygous match probability
+homAllele <- function(pa, fst=0.02)
+
+    {
+
+    numerator = ((2*fst)+((1-fst)*pa))*((2*fst)+((1-fst)*pa))
+
+    denominator = (1+fst)*(1+fst)
+
+    return(numerator/denominator)
+
+    }
+
 
 
 
@@ -767,12 +790,25 @@ het <- function(pa, pb, fst=0.02)
 
     }
 
+# heterozygous match probability
+hetAllele <- function(pa, pb, fst=0.02)
+
+    {
+
+    numerator = (fst+((1-fst)*pa))*(fst+((1-fst)*pb))
+
+    denominator = (1+fst)*(1+fst)
+
+    return(2*(numerator/denominator))
+
+    }
+
 #singleFst = function(p,fst)
 #	{
 #	(fst+(1-fst)*p)/(1+fst)
 #	}
 
-matchProb = function(hypothesis,rr,fst=0.02)
+matchProb = function(hypothesis,rr,fst=0.02,sep=FALSE)
     {
 	ideal.match <- c()
 	for(j in 1:ncol(hypothesis$queriedProfile))
@@ -793,29 +829,32 @@ matchProb = function(hypothesis,rr,fst=0.02)
             p1 = (p1-fst)/(1-fst)
             p2 = (p2-fst)/(1-fst)
             # get match new fst adjusted match prob
-            ideal.match = c(ideal.match,rr[2]+(rr[1]*((2*fst+(1-fst)*p1)/(1+fst)))+((1-sum(rr))*hom(p1,fst=fst)))
+            ideal.match = c(ideal.match,rr[2]+(rr[1]*((2*fst+(1-fst)*p1)/(1+fst)))+((1-sum(rr))*homAllele(p1,fst=fst)))
             } else {
             # undo last bit of fst adjustment
             p1 = p1/(1-fst)
             p2 = p2/(1-fst)
             # get match new fst adjusted match prob
-            ideal.match = c(ideal.match,rr[2]+(rr[1]*((fst+(1-fst)*((p1+p2)/2))/(1+fst)))+((1-sum(rr))*het(p1,p2,fst=fst)))
+            ideal.match = c(ideal.match,rr[2]+(rr[1]*((fst+(1-fst)*((p1+p2)/2))/(1+fst)))+((1-sum(rr))*hetAllele(p1,p2,fst=fst)))
             }
 		}
-		
-	ideal.match = 1/prod(ideal.match)
-    return(ideal.match)
+	if(sep)
+		{
+		return(1/ideal.match)
+		} else {
+		return(1/prod(ideal.match))
+		}
     }
 
-ideal <- function(hypothesis,rr,fst=0.02)
+ideal <- function(hypothesis)
     {
 	# Calculates idealised likelihood assuming Q is perfect match
 	# Parameters:
 	# 	hypothesis: generated by either defence.hypothesis() or prosecution.hypothesis(), although rr only makes sense under defence
 	#	rr: relatedness arguments from args
-	ideal.match = matchProb(hypothesis,rr,fst)
+	ideal.match = getMatchProb(hypothesis)
 
-	result <- data.frame(calculation =c('likelihood ratio','Log10 likelihood ratio'),estimate=c(round.0(ideal.match),round.3(log10(ideal.match))))
+	result <- data.frame(calculation =c('likelihood ratio','Log10 likelihood ratio'),estimate=c(toString(signif(ideal.match,3)),round.1(log10(ideal.match))))
 return(result)}
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -827,7 +866,7 @@ fs1 <- 20 # font size for header (sub1)
 fs2 <- 15 # font size for header (sub2)
 fs3 <- 8 # tiny, for the big tables
 #--------------------------------------------------------------------------------------------------------------------
-common.report.section <- function(names,genetics){
+common.report.section <- function(names,genetics,resTable=NULL){
 	# objects common to both the allele report and the final output report are done once here, for consistency, and saves repeating code
 
 	# Create a new Docx. 
@@ -839,8 +878,13 @@ common.report.section <- function(names,genetics){
 	addHeader( doc, hyp.P(genetics), font.size=fs2 )
 	addHeader( doc, hyp.D(genetics), font.size=fs2 )
 	addParagraph(doc, line)
+	if(!is.null(resTable))
+		{
+		addHeader(doc, "Overall Likelihood", TOC.level=2, font.size=fs2)
+		addTable(doc, resTable ,col.justify='C', header.col.justify='C')
+		spacer(doc,3)
+		}
 	addPageBreak(doc, width=11,height=8.5,omi=c(1,1,1,1) )
-
 #	addTOC(doc)
 #	addPageBreak(doc, width=11,height=8.5,omi=c(1,1,1,1) )
 
@@ -924,18 +968,15 @@ output.report <- function(prosecutionHypothesis,defenceHypothesis,results,file=N
 	names <- filename.maker(prosecutionHypothesis$outputPath,prosecutionHypothesis$caseName,file,type='results')
 	names$subtitle <- prosecutionHypothesis$caseName
 
-	doc <- common.report.section(names,genetics)
+	resTable = overall.likelihood.table.reformatter(prosecutionResults,defenceResults)
+	doc <- common.report.section(names,genetics,resTable)
 
 	addHeader(doc, "Likelihoods at each locus", TOC.level=2, font.size=fs2)
 	addTable(doc, local.likelihood.table.reformatter(prosecutionHypothesis,defenceHypothesis,prosecutionResults,defenceResults) ,col.justify='C', header.col.justify='C',font.size=8)
 	spacer(doc,3)
 
-	addHeader(doc, "Overall Likelihood", TOC.level=2, font.size=fs2)
-	addTable(doc, overall.likelihood.table.reformatter(prosecutionResults,defenceResults) ,col.justify='C', header.col.justify='C')
-	spacer(doc,3)
-
 	addHeader(doc, "Theoretical maximum LR", TOC.level=2, font.size=fs2)
-	addTable(doc, ideal(defenceHypothesis,defenceHypothesis$relatedness), col.justify='C', header.col.justify='C')
+	addTable(doc, ideal(defenceHypothesis), col.justify='C', header.col.justify='C')
 	spacer(doc,3)
 
 	addHeader(doc, "Dropout and degradation parameter estimates", TOC.level=2, font.size=fs2)
@@ -953,6 +994,10 @@ output.report <- function(prosecutionHypothesis,defenceHypothesis,results,file=N
 	addHeader(doc, "Input files", TOC.level=1, font.size=fs1)
 	addTable(doc, file.inputs.table.reformatter(prosecutionHypothesis), col.justify='L', header.col.justify='L')
 	spacer(doc,3)
+
+	# seed used
+	addHeader(doc, "Seed used", TOC.level=1, font.size=fs1)
+	addTable(doc, seedTable(results), col.justify='L', header.col.justify='L')
 
 	addHeader(doc, "Optimised parameters", TOC.level=1, font.size=fs1)
 	addHeader(doc, "Prosecution parameters", TOC.level=2, font.size=fs2)

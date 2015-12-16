@@ -40,5 +40,49 @@ contributor, summing over all the possible genotypes for all other
 contributors.}
 \seealso{defence.hypothesis, prosecution.hypothesis, 
 optimisation.params,DEoptimLoop}
+\examples{
+\dontrun{
+# datapath to example files
+datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
+# File paths and case name for allele report
+admin = pack.admin.input(
+            cspFile = file.path(datapath, 'hammer-CSP.csv'),
+            refFile = file.path(datapath, 'hammer-reference.csv'),
+            caseName = "hammer",
+	    kit= "SGMplus"
+             )
+
+# Enter arguments
+args = list(
+        nUnknowns = 1,
+        doDropin = FALSE,
+        ethnic = "EA1",
+        adj = 1,
+        fst = 0.02,
+        relatedness = c(0,0)
+        )
+
+# Create hypotheses
+hypP = do.call(prosecution.hypothesis, append(admin,args))
+hypD = do.call(defence.hypothesis, append(admin,args))
+
+# Get parameters for optimisation
+paramsP = optimisation.params(hypP)
+paramsD = optimisation.params(hypD)
+
+# Run optimisation
+# n.steps set for demonstration purposes
+results = evaluate(paramsP, paramsD, n.steps=1)
+
+# get most likely marginal genotypes under defence
+get.likely.genotypes(hypD,paramsD,results$Def)
+
+# get most likely joint genotypes under defence
+get.likely.genotypes(hypD,paramsD,results$Def,joint=TRUE)
+
+# get full posterior likelihoods
+get.likely.genotypes(hypD,paramsD,results$Def,posterior=TRUE)
+}
+}
 

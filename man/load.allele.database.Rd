@@ -15,7 +15,7 @@
 \description{Reads allele database from file, or loads database provided with
 \pkg{likeLTD}.}
 \details{If not NULL, then the input should consist of a file in the following
-format:
+format is using discrete model:
 
   \tabular{ccccccr}{
     Marker \tab Allele \tab  BP \tab EA1 \tab EA2 \tab EA3 \tab \dots \cr
@@ -33,8 +33,25 @@ format:
 The first line needs to be present. The first column indicated the locus, the
 second the name of the allele, the third the fragment length. The next columns
 are the frequencies for specific ethnic groups. There are no limits to the
-number of ethnic groups included. Finally, if the name of an allele is
+number of ethnic groups included. If the name of an allele is
 \code{R}, then it is ignored.
+
+If using the peak heights model, there should be an extra column, "LUS", which
+gives the mean longest uninterrupted sequence for that allele. 
 }
 \seealso{read.unc.profile, read.known.profiles}
+\examples{
+# datapath to example files
+datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
+# File paths and case name for allele report
+admin = pack.admin.input(
+            cspFile = file.path(datapath, 'hammer-CSP.csv'),
+            refFile = file.path(datapath, 'hammer-reference.csv'),
+            caseName = "hammer",
+	    kit= "SGMplus"
+             )
+
+# get allele database
+load.allele.database(kit=admin$kit)
+}

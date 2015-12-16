@@ -11,11 +11,13 @@ in package sources).
 \author{John Doe
 (\email{john.doe@doelabs.org})}
 \examples{
+\dontrun{
 if (require(svUnit)) {
 clearLog()
 runTest(svSuite("package:likeLTD"))
 ## Possibly run other tests here...
 errorLog()
+}
 }
 }
 \keyword{utilities}

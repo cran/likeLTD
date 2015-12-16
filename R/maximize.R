@@ -26,8 +26,9 @@ estimates <- function(indiv, csp) {
 initial.arguments <- function(hypothesis, ...) {
   # Best(?) guess for initial arguments. 
   #
-  # Parameters:
+  # Parameters: 
   #    hypothesis: Hypothesis for which to guess nuisance paramters.
+
   hypothesis = add.args.to.hypothesis(hypothesis, ...)
   sanity.check(hypothesis) # makes sure hypothesis has right type.
   # -1 because relative to first.
@@ -70,10 +71,10 @@ upper.bounds = function(arguments, zero=1e-6, logDegradation=FALSE) {
   # Upper bounds of optimisation function.
   # 
   # Parameters:
-  # arguments: Arguments passed to the optimisation function. Used as a
-  #  template.
-  # zero: Some bounds should be given as >, rather than >=. This arguments is
-  #  an epsilon to simulate the first case.
+  #  arguments: Arguments passed to the optimisation function. Used as a
+  #             template.
+  #   zero: Some bounds should be given as >, rather than >=. This arguments is
+  #         an epsilon to simulate the first case.
   locusAdjustment = rep(1.5, length(arguments$locusAdjustment))
   dropout     = rep(1-zero, length(arguments$dropout))
   degradation = if(logDegradation) { 0-zero } else { 1-zero }
@@ -94,7 +95,7 @@ lower.bounds = function(arguments, zero=1e-6, logDegradation=FALSE) {
   # 
   # Parameters:
   #  arguments: Arguments passed to the optimisation function. Used as a
-  #    template.
+  #             template.
   #   zero: Some bounds should be given as >, rather than >=. This arguments is
   #         an epsilon to simulate the first case.
   #   logDegradation: Wether degradation parameters are entered as exponents of
@@ -159,7 +160,7 @@ optimisation.params <- function(hypothesis, verbose=FALSE, fixed=NULL,
   } else  fixedstuff = NULL
 
     # Linkage adjustment if brothers
-    linkBool = doLinkage&identical(hypothesis$relatedness,c(0.5,0.25))&hypothesis$hypothesis=="prosecution"
+    linkBool = doLinkage&!hypothesis$relationship%in%c(0,1)&hypothesis$hypothesis=="prosecution"
   if(linkBool)
     {
     linkFactor = linkage(hypothesis)
@@ -483,13 +484,21 @@ geometric.series <- function(start,end,n){
 return(steps)}
 
 
-evaluate <- function(P.pars, D.pars, tolerance=1e-5, n.steps=NULL, progBar = TRUE, interim=FALSE, CR.start=0.1, CR.end=0.7){
+evaluate <- function(P.pars, D.pars, tolerance=1e-5, n.steps=NULL, progBar = TRUE, interim=TRUE, CR.start=0.1, CR.end=0.7, seed.input=NULL){
 
 	# P.pars D.pars: parameter object created by optimisation.params()
 	# the smallest convergence threshold (ie for the last step)
 	# number of convergence thresholds
-	
 	# for each step, run a DEoptimLoop both for P and D, until each converges at that steps accuracy
+
+	# set seed
+	if(is.null(seed.input)) 
+	    {
+	    seed.used =  as.integer(Sys.getpid()+as.integer(Sys.time()))
+	    } else {
+        seed.used = as.integer(seed.input)
+	    }
+    set.seed(seed.used)
 
 	# combine the outputs outside the loop
 	P.bestmemit <- D.bestmemit <- NULL
@@ -662,7 +671,7 @@ evaluate <- function(P.pars, D.pars, tolerance=1e-5, n.steps=NULL, progBar = TRU
 	D.results$optim$nfeval <- D.nfeval
 
 # return all results
-return(list(Pros =P.results,Def =D.results, WoE =WoE))}
+return(list(Pros =P.results,Def =D.results, WoE =WoE, seed.used=seed.used,seed.input=seed.input))}
 
 # function to output interim report
 interim = function(resultsP,resultsD,step,n.steps)
@@ -690,15 +699,18 @@ interim = function(resultsP,resultsD,step,n.steps)
 
 
 evaluate.from.interim <- function(file){
-# set parameters to NULL so CRAN doesnt complain
-n.steps = NULL
-CR.steps = NULL
-tol.steps = NULL
-progBar = NULL
-pb = NULL
 
-	# load the 'interim.RData' file produced by evaluate(..., interim=T)
+	# check if interim.RData exists
 	if(!grep(pattern = 'interim.RData', x=file))stop("File must be the 'interim.RData' file produced by evaluate() when interim=T")
+	# define variables to appease the CRAN gods
+	n.steps = NULL
+	CR.steps = NULL
+	tol.steps = NULL
+	progBar = NULL
+	pb = NULL
+	seed.used = NULL
+	seed.input=NULL
+	# load the 'interim.RData' file produced by evaluate(..., interim=T)
 	load(file)
 
 		for(n in n:n.steps){
@@ -796,6 +808,6 @@ pb = NULL
 	D.results$optim$nfeval <- D.nfeval
 
 # return all results
-return(list(Pros =P.results,Def =D.results, WoE =WoE))}
+return(list(Pros =P.results,Def =D.results, WoE =WoE, seed.used=seed.used,seed.input=seed.input))}
 
 

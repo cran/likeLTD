@@ -13,3 +13,19 @@ and the reference profiles, prior to the main statistical evaluation. Parameter
 inputs for nUnknowns and doDropin are suggested. 
 The report is placed in the directory specified by admin$outputPath.
 }
+\examples{
+\dontrun{
+# datapath to example files
+datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
+
+# File paths and case name for allele report
+admin = pack.admin.input(
+            cspFile = file.path(datapath, 'hammer-CSP.csv'),
+            refFile = file.path(datapath, 'hammer-reference.csv'),
+            caseName = "hammer",
+	    kit= "SGMplus"
+             )
+
+# Next we generate an allele report
+allele.report(admin)}
+}

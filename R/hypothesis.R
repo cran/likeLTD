@@ -278,14 +278,16 @@ agnostic.hypothesis <- function(cspProfile, uncProfile, knownProfiles,
 # Documentation is in man directory.
 prosecution.hypothesis <- function(cspFile, refFile, ethnic='NDU1',
                                    nUnknowns=0, adj=1e0, fst=0.02,
-                                   databaseFile=NULL, linkageFile=NULL, relatedness=c(0,0), 
+                                   databaseFile=NULL, linkageFile=NULL,
                                    doDropin=FALSE, combineRare=TRUE,
-				   rareThreshold=0.05, kit=NULL,...) {
+				   rareThreshold=0.05, kit=NULL, relationship=0,...) {
+  if(relationship>7|relationship<0) stop("Relationship must be specified between 0 and 7")
   if(is.null(databaseFile)&is.null(kit)) kit = "DNA17"
+  relatedness = convertRelationship(relationship)
   alleleDb = load.allele.database(databaseFile,kit)
   cspProfile = read.csp.profile(cspFile)
   uncProfile = read.unc.profile(cspFile)
-  if(identical(relatedness,c(0.5,0.25)))
+  if(!relationship%in%c(0,1))
 	{
   	linkageInfo = load.linkage.info(linkageFile)
 	rownames(linkageInfo) = linkageInfo[,1]
@@ -325,12 +327,14 @@ prosecution.hypothesis <- function(cspFile, refFile, ethnic='NDU1',
   result[["adj"]] = adj
   result[["fst"]] = fst
   result[["relatedness"]] = relatedness
+  result[["relationship"]] = relationship 
   result[["doDropin"]] = doDropin
   result[["cspFile"]] = cspFile
   result[["refFile"]] = refFile
   result[["databaseFile"]] = databaseFile
   result[["kit"]] = kit
-  if(identical(relatedness,c(0.5,0.25)))
+
+  if(!relationship%in%c(0,1))
 	{
     result[["linkageInfo"]] = linkageInfo
     }
@@ -343,13 +347,15 @@ prosecution.hypothesis <- function(cspFile, refFile, ethnic='NDU1',
 # Documentation is in man directory.
 defence.hypothesis <- function(cspFile, refFile, ethnic='NDU1',  nUnknowns=0,
                                adj=1e0, fst=0.02, databaseFile=NULL, linkageFile=NULL, 
-                               relatedness=c(0,0), doDropin=FALSE, combineRare=TRUE, 
-			       rareThreshold=0.05, kit=NULL, ...) {
+                               doDropin=FALSE, combineRare=TRUE, 
+			       rareThreshold=0.05, kit=NULL, relationship=0,...) {
+  if(relationship>7|relationship<0) stop("Relationship must be specified between 0 and 7")
   if(is.null(databaseFile)&is.null(kit)) kit = "DNA17"
+  relatedness = convertRelationship(relationship)
   alleleDb = load.allele.database(databaseFile,kit)
   cspProfile = read.csp.profile(cspFile)
   uncProfile = read.unc.profile(cspFile)
-  if(identical(relatedness,c(0.5,0.25)))
+  if(!relationship%in%c(0,1))
 	{
   	linkageInfo = load.linkage.info(linkageFile)
 	rownames(linkageInfo) = linkageInfo[,1]
@@ -381,13 +387,16 @@ defence.hypothesis <- function(cspFile, refFile, ethnic='NDU1',  nUnknowns=0,
   result[["adj"]] = adj
   result[["fst"]] = fst
   result[["relatedness"]] = relatedness
+  result[["relationship"]] = relationship 
   result[["doDropin"]] = doDropin
   result[["cspFile"]] = cspFile
   result[["refFile"]] = refFile
   result[["databaseFile"]] = databaseFile
   result[["kit"]] = kit
-  if(identical(relatedness,c(0.5,0.25))) result[["linkageInfo"]] = linkageInfo
-
+  if(!relationship%in%c(0,1)) 
+	{
+	result[["linkageInfo"]] = linkageInfo
+	}
   sanity.check(result) # makes sure hypothesis has right type.
   result
 }

@@ -19,4 +19,4 @@
   penalty function. This particular flavor of the objective returns the sum of
   the log-likelihood and the sum of log-penalties across loci.
 }
-\seealso{create.likelihood.vectors, create.likelihood, penalties, Objective Functions}
+\seealso{create.likelyhood.vectors, create.likelihood, penalties, Objective Functions}

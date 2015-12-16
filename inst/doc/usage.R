@@ -9,297 +9,197 @@
 
 
 ###################################################
-### code chunk number 2: verystart (eval = FALSE)
+### code chunk number 2: inputs (eval = FALSE)
 ###################################################
 ##   require(likeLTD)
-##   require(DEoptim)
 ## 
-##   # Case we are going to be looking at.
-##   caseName = 'hammer'
-##   datapath = file.path(system.file("extdata", package="likeLTD"), 
-##                        caseName)
+##   # Case we are going to be evaluating
+##   caseName = "Laboratory"
+##   datapath = file.path(system.file("extdata", package="likeLTD"),
+##       'laboratory')
+## 
+##   # File paths and case name for allele report
+##   admin = pack.admin.input.peaks(
+##       peaksFile = file.path(datapath, 'laboratory-CSP.csv'),
+##       refFile = file.path(datapath, 'laboratory-reference.csv'),
+##       caseName = caseName,
+##       detectionThresh = 20
+##       )
+
+
+###################################################
+### code chunk number 3: alleleReport (eval = FALSE)
+###################################################
+##   # Generate allele report
+##   allele.report.peaks(admin)
+
+
+###################################################
+### code chunk number 4: detectThresh (eval = FALSE)
+###################################################
+## # Specifying locus specific detection thresholds
+## admin = pack.admin.input.peaks(
+##             peaksFile = file.path(datapath, 'laboratory-CSP.csv'),
+##             refFile = file.path(datapath, 'laboratory-reference.csv'),
+##             caseName = "Laboratory",
+##             detectionThresh = list(D10S1248=20,vWA=20,D16S539=20,D2S1338=20, # blue  
+##                                    D8S1179=30,D21S11=30,D18S51=30, # green
+##                                    D22S1045=40,D19S433=40,TH01=40,FGA=40, # black  
+##                                    D2S441=50,D3S1358=50,D1S1656=50,D12S391=50,SE33=50) # red
+##             )
+
+
+###################################################
+### code chunk number 5: hyps (eval = FALSE)
+###################################################
+##   # Enter arguments
 ##   args = list(
-##     databaseFile = NULL,
-##     linkageFile = NULL,
-##     cspFile    = file.path(datapath, 'hammer-CSP.csv'),
-##     refFile      = file.path(datapath, 'hammer-reference.csv'),
-##     nUnknowns    = 0,
-##     doDropin     = TRUE,
-##     ethnic       = "NDU1",
-##     adj          = 1.0,
-##     fst          = 0.02,
-##     relatedness  = c(0, 0)/4
-##   )
-##   # Create hypothesis for defence and prosecution.
-##   defenceHyp = do.call(defence.hypothesis, args)
-##   prosecuHyp = do.call(prosecution.hypothesis, args)
-
-
-###################################################
-### code chunk number 3: models (eval = FALSE)
-###################################################
-##   defenceModel <- create.likelihood(defenceHyp)
-##   prosecuModel <- create.likelihood(prosecuHyp)
-
-
-###################################################
-### code chunk number 4: usage.Rnw:80-89 (eval = FALSE)
-###################################################
-##   defenceModel(rcont=c(1, 1e-8, 1.63), 
-##                degradation=c(10^-2.27, 10^-2.74, 10^-2.47),
-##                locusAdjustment=list(D3=0.983, vWA=1.010, D16=1.028, 
-##                                     D2=1.072, D8=1.020, D21=0.930,
-##                                     D18=0.850, D19=0.932, 
-##                                     TH01=1.041, FGA=0.916),
-##                dropout=c(0.5072, 1e-8), 
-##                dropin=1.0216,
-##                power=-4.4462)
-
-
-###################################################
-### code chunk number 5: plotscalarWoE (eval = FALSE)
-###################################################
-##   require(ggplot2)
-##   require(scales)
-##   # Function that winnows down to a single value
-##   scalarWoE <- function(x) {
-##      defenceModel(locusAdjustment=list(D3=0.983, vWA=1.010,
-##                                        D16=1.028, D2=1.072,
-##                                        D8=1.020, D21=0.930,
-##                                        D18=0.850, D19=0.932, 
-##                                        TH01=1.041, FGA=0.916),
-##                   dropout=c(0.5072, 1e-8), 
-##                   degradation=c(10^-2.27, 10^-2.74, 10^-2.47),
-##                   rcont=c(x, 1e-8, 1), 
-##                   dropin=1.0216,
-##                   power=-4.4462)
-##   }
+##         nUnknowns = 1,
+##         doDropin = FALSE,
+##         ethnic = "NDU1",
+##         adj = 1,
+##         fst = 0.03,
+##         relationship = 0
+##         )
 ## 
-##   x = 0:30/30 * 3e0
-##   data = data.frame(x=x, y=sapply(x, scalarWoE))
-##   plots <- ggplot(data, aes(x=x, y=y))                  +
-##               geom_line()                               +
-##               xlab("Relative contribution of Victim 1") +
-##               ylab("Weight of Evidence")                +
-##               scale_y_log10(
-##                 labels=trans_format("log10", math_format(10^.x)))
-##   print(plots)
+##   # Create hypotheses
+##   hypP = do.call(prosecution.hypothesis.peaks, append(admin,args))
+##   hypD = do.call(defence.hypothesis.peaks, append(admin,args))
 
 
 ###################################################
-### code chunk number 6: plotme
+### code chunk number 6: params (eval = FALSE)
+###################################################
+##   # Generate likelihood functions and optimisation parameters
+##   paramsP = optimisation.params.peaks(hypP,verbose=FALSE)
+##   paramsD = optimisation.params.peaks(hypD,verbose=FALSE)
+## 
+##   # reduce number of iterations for demonstration purposes
+##   paramsP$control$itermax=25
+##   paramsD$control$itermax=25
+
+
+###################################################
+### code chunk number 7: optimise (eval = FALSE)
+###################################################
+##   # Run optimisation
+##   results = evaluate.peaks(paramsP, paramsD, n.steps=1, 
+##       converge=FALSE)
+
+
+###################################################
+### code chunk number 8: output (eval = FALSE)
+###################################################
+##   # Generate output report
+##   output.report.peaks(hypP,hypD,results)
+
+
+###################################################
+### code chunk number 9: optimisedResults (eval = FALSE)
+###################################################
+##   results = list(Def=list(optim=list(bestmem = c(
+##     -3.459508761,     -2.599777111,     -3.385884129,    902.540872861, 
+##    171.908479331,    993.204056721,     49.207185386,      0.005254712, 
+##      1.016233455,      1.368054382,      0.984844585,      1.371468905, 
+##      0.535551035,      1.230762849,      1.358293511,      1.264302595, 
+##      0.747843015,      0.775721009,      1.000498903,      0.908954169, 
+##      0.822063630,      0.946761244,      0.985732220,      1.135499511, 
+##      0.001433327,      0.001742212))))
+##   names(results$Def$optim$bestmem) = c(
+##     "degradation1",     "degradation2",     "degradation3",         "DNAcont1", 
+##         "DNAcont2",         "DNAcont3",            "scale",        "gradientS", 
+##  "gradientAdjust1",  "gradientAdjust2",  "gradientAdjust3",  "gradientAdjust4", 
+##  "gradientAdjust5",  "gradientAdjust6",  "gradientAdjust7",  "gradientAdjust8", 
+##  "gradientAdjust9", "gradientAdjust10", "gradientAdjust11", "gradientAdjust12", 
+## "gradientAdjust13", "gradientAdjust14", "gradientAdjust15", "gradientAdjust16", 
+##            "meanD",            "meanO") 
+
+
+###################################################
+### code chunk number 10: likely (eval = FALSE)
+###################################################
+##   # Get the most likely single-contributor genotypes
+##   gensMarginal = get.likely.genotypes.peaks(hypD,paramsD,
+##       results$Def)
+##   # Return joint genotypes and probabilities
+##   gensJoint = get.likely.genotypes.peaks(hypD,paramsD,
+##       results$Def,joint=TRUE)
+
+
+###################################################
+### code chunk number 11: posterior (eval = FALSE)
+###################################################
+##   # Get the posterior likelihoods for all genotype combinations
+##   gensPosterior = get.likely.genotypes.peaks(hypD,paramsD,
+##       results$Def,posterior=TRUE)
+
+
+###################################################
+### code chunk number 12: run
 ###################################################
   require(likeLTD)
-  require(DEoptim)
 
-  # Case we are going to be looking at.
-  caseName = 'hammer'
-  datapath = file.path(system.file("extdata", package="likeLTD"), 
-                       caseName)
+  # Case we are going to be evaluating
+  caseName = "Laboratory"
+  datapath = file.path(system.file("extdata", package="likeLTD"),
+      'laboratory')
+
+  # File paths and case name for allele report
+  admin = pack.admin.input.peaks(
+      peaksFile = file.path(datapath, 'laboratory-CSP.csv'),
+      refFile = file.path(datapath, 'laboratory-reference.csv'),
+      caseName = caseName,
+      detectionThresh = 20
+      )
+  # Enter arguments
   args = list(
-    databaseFile = NULL,
-    linkageFile = NULL,
-    cspFile    = file.path(datapath, 'hammer-CSP.csv'),
-    refFile      = file.path(datapath, 'hammer-reference.csv'),
-    nUnknowns    = 0,
-    doDropin     = TRUE,
-    ethnic       = "NDU1",
-    adj          = 1.0,
-    fst          = 0.02,
-    relatedness  = c(0, 0)/4
-  )
-  # Create hypothesis for defence and prosecution.
-  defenceHyp = do.call(defence.hypothesis, args)
-  prosecuHyp = do.call(prosecution.hypothesis, args)
-  defenceModel <- create.likelihood(defenceHyp)
-  prosecuModel <- create.likelihood(prosecuHyp)
-  require(ggplot2)
-  require(scales)
-  # Function that winnows down to a single value
-  scalarWoE <- function(x) {
-     defenceModel(locusAdjustment=list(D3=0.983, vWA=1.010,
-                                       D16=1.028, D2=1.072,
-                                       D8=1.020, D21=0.930,
-                                       D18=0.850, D19=0.932, 
-                                       TH01=1.041, FGA=0.916),
-                  dropout=c(0.5072, 1e-8), 
-                  degradation=c(10^-2.27, 10^-2.74, 10^-2.47),
-                  rcont=c(x, 1e-8, 1), 
-                  dropin=1.0216,
-                  power=-4.4462)
-  }
+        nUnknowns = 1,
+        doDropin = FALSE,
+        ethnic = "NDU1",
+        adj = 1,
+        fst = 0.03,
+        relationship = 0
+        )
 
-  x = 0:30/30 * 3e0
-  data = data.frame(x=x, y=sapply(x, scalarWoE))
-  plots <- ggplot(data, aes(x=x, y=y))                  +
-              geom_line()                               +
-              xlab("Relative contribution of Victim 1") +
-              ylab("Weight of Evidence")                +
-              scale_y_log10(
-                labels=trans_format("log10", math_format(10^.x)))
-  print(plots)
+  # Create hypotheses
+  hypP = do.call(prosecution.hypothesis.peaks, append(admin,args))
+  hypD = do.call(defence.hypothesis.peaks, append(admin,args))
+  # Generate likelihood functions and optimisation parameters
+  paramsP = optimisation.params.peaks(hypP,verbose=FALSE)
+  paramsD = optimisation.params.peaks(hypD,verbose=FALSE)
+
+  # reduce number of iterations for demonstration purposes
+  paramsP$control$itermax=25
+  paramsD$control$itermax=25
+  results = list(Def=list(optim=list(bestmem = c(
+    -3.459508761,     -2.599777111,     -3.385884129,    902.540872861, 
+   171.908479331,    993.204056721,     49.207185386,      0.005254712, 
+     1.016233455,      1.368054382,      0.984844585,      1.371468905, 
+     0.535551035,      1.230762849,      1.358293511,      1.264302595, 
+     0.747843015,      0.775721009,      1.000498903,      0.908954169, 
+     0.822063630,      0.946761244,      0.985732220,      1.135499511, 
+     0.001433327,      0.001742212))))
+  names(results$Def$optim$bestmem) = c(
+    "degradation1",     "degradation2",     "degradation3",         "DNAcont1", 
+        "DNAcont2",         "DNAcont3",            "scale",        "gradientS", 
+ "gradientAdjust1",  "gradientAdjust2",  "gradientAdjust3",  "gradientAdjust4", 
+ "gradientAdjust5",  "gradientAdjust6",  "gradientAdjust7",  "gradientAdjust8", 
+ "gradientAdjust9", "gradientAdjust10", "gradientAdjust11", "gradientAdjust12", 
+"gradientAdjust13", "gradientAdjust14", "gradientAdjust15", "gradientAdjust16", 
+           "meanD",            "meanO") 
 
 
 ###################################################
-### code chunk number 7: skel (eval = FALSE)
+### code chunk number 13: diagnose (eval = FALSE)
 ###################################################
-##   skeleton = initial.arguments(defenceHyp)
-##   vector.model <- function(x) {
-##     args <- relist(x, skeleton)
-##     args[["degradation"]] = 10^args[["degradation"]]
-##     result <- do.call(defenceModel, args)
-##     log10(result)
-##   }
-## 
-##   # Call vector.model with vector argument.
-##   arguments = skeleton
-##   arguments[["degradation"]] = log10(arguments[["degradation"]])
-##   vector.model( as.vector(unlist(arguments)) )
+##   # Plot CSP with most likely genotypes
+##   peaks.results.plot(hypD,results$Def,replicate=1)
 
 
 ###################################################
-### code chunk number 8: maxiskel (eval = FALSE)
+### code chunk number 14: plot
 ###################################################
-##   require(stats)
-##   # define upper and lower bounds for constrained maximization
-##   nloci = ncol(defenceHyp$cspProfile)
-##   upper = list(locusAdjustment = rep(1.5, nloci),
-##                dropout         = c(1-1e-3, 1-1e-3),
-##                degradation     = rep(-1e-3, 3),
-##                rcont           = rep(100, 2),
-##                dropin          = 1,
-##                power      = -2 )[names(arguments)]
-##   lower = list(locusAdjustment = rep(0.5, nloci),
-##                dropout         = c(1e-3, 1e-3),
-##                degradation     = rep(-20, 3),
-##                rcont           = rep(1e-3, 2),
-##                dropin          = 1e-3,
-##                power      = -6 )[names(arguments)]
-## 
-##   # perform maximization
-##   result <- DEoptim(fn  = vector.model,
-##                   upper = unlist(upper),
-##                   lower = unlist(lower),
-##                   control = list(strategy=3, itermax=500)
-##   		)
-##   opti = relist(result$optim$bestmem, skeleton)
-##   cat(sprintf("Resulting Weight of Evidence: 10^%f\n",
-##               -result$optim$bestval))
-
-
-###################################################
-### code chunk number 9: alltheabove
-###################################################
-  require(likeLTD)
-  require(DEoptim)
-
-  # Case we are going to be looking at.
-  caseName = 'hammer'
-  datapath = file.path(system.file("extdata", package="likeLTD"), 
-                       caseName)
-  args = list(
-    databaseFile = NULL,
-    linkageFile = NULL,
-    cspFile    = file.path(datapath, 'hammer-CSP.csv'),
-    refFile      = file.path(datapath, 'hammer-reference.csv'),
-    nUnknowns    = 0,
-    doDropin     = TRUE,
-    ethnic       = "NDU1",
-    adj          = 1.0,
-    fst          = 0.02,
-    relatedness  = c(0, 0)/4
-  )
-  # Create hypothesis for defence and prosecution.
-  defenceHyp = do.call(defence.hypothesis, args)
-  prosecuHyp = do.call(prosecution.hypothesis, args)
-  defenceModel <- create.likelihood(defenceHyp)
-  prosecuModel <- create.likelihood(prosecuHyp)
-  skeleton = initial.arguments(defenceHyp)
-  vector.model <- function(x) {
-    args <- relist(x, skeleton)
-    args[["degradation"]] = 10^args[["degradation"]]
-    result <- do.call(defenceModel, args)
-    log10(result)
-  }
-
-  # Call vector.model with vector argument.
-  arguments = skeleton
-  arguments[["degradation"]] = log10(arguments[["degradation"]])
-  vector.model( as.vector(unlist(arguments)) )
-  require(stats)
-  # define upper and lower bounds for constrained maximization
-  nloci = ncol(defenceHyp$cspProfile)
-  upper = list(locusAdjustment = rep(1.5, nloci),
-               dropout         = c(1-1e-3, 1-1e-3),
-               degradation     = rep(-1e-3, 3),
-               rcont           = rep(100, 2),
-               dropin          = 1,
-               power      = -2 )[names(arguments)]
-  lower = list(locusAdjustment = rep(0.5, nloci),
-               dropout         = c(1e-3, 1e-3),
-               degradation     = rep(-20, 3),
-               rcont           = rep(1e-3, 2),
-               dropin          = 1e-3,
-               power      = -6 )[names(arguments)]
-
-  # perform maximization
-  result <- DEoptim(fn  = vector.model,
-                  upper = unlist(upper),
-                  lower = unlist(lower),
-                  control = list(strategy=3, itermax=500)
-  		)
-  opti = relist(result$optim$bestmem, skeleton)
-  cat(sprintf("Resulting Weight of Evidence: 10^%f\n",
-              -result$optim$bestval))
-
-
-###################################################
-### code chunk number 10: optim (eval = FALSE)
-###################################################
-##   params = optimisation.params(defenceHyp, verbose=FALSE)
-##   params$control$itermax=50 # Less strict convergence, for demo purposes.
-##   results <- do.call(DEoptim, params)
-##   arguments <- relistArguments(results$optim$bestmem, defenceHyp)
-
-
-###################################################
-### code chunk number 11: tabopt
-###################################################
-  require(likeLTD)
-  require(DEoptim)
-
-  # Case we are going to be looking at.
-  caseName = 'hammer'
-  datapath = file.path(system.file("extdata", package="likeLTD"), 
-                       caseName)
-  args = list(
-    databaseFile = NULL,
-    linkageFile = NULL,
-    cspFile    = file.path(datapath, 'hammer-CSP.csv'),
-    refFile      = file.path(datapath, 'hammer-reference.csv'),
-    nUnknowns    = 0,
-    doDropin     = TRUE,
-    ethnic       = "NDU1",
-    adj          = 1.0,
-    fst          = 0.02,
-    relatedness  = c(0, 0)/4
-  )
-  # Create hypothesis for defence and prosecution.
-  defenceHyp = do.call(defence.hypothesis, args)
-  prosecuHyp = do.call(prosecution.hypothesis, args)
-  params = optimisation.params(defenceHyp, verbose=FALSE)
-  params$control$itermax=50 # Less strict convergence, for demo purposes.
-  results <- do.call(DEoptim, params)
-  arguments <- relistArguments(results$optim$bestmem, defenceHyp)
-
-
-###################################################
-### code chunk number 12: testing (eval = FALSE)
-###################################################
-## library(svUnit)
-## library(likeLTD)
-## 
-## runTest( svSuite("package:likeLTD") )
-## Log()
+  # Plot CSP with most likely genotypes
+  peaks.results.plot(hypD,results$Def,replicate=1)
 
 

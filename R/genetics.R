@@ -338,13 +338,12 @@ homLinked = function(pA,fst)
 	return(c(AB0,AB1,D))
 	}
 
-
-# Z matrix needed for linked locus match pobability
-Z = function(R)
+# Z matrix needed for linked locus match probability siblings
+Zsib = function(R)
 	{
 	X = R^2+(1-R)^2
 	Y = 2*R*(1-R)
-	out = matrix(c(
+	out = matrix(rev(c(
 			(X^2)/4,
 			(X*Y)/2,
 			(Y^2)/4,
@@ -354,8 +353,100 @@ Z = function(R)
 			(Y^2)/4,
 			(X*Y)/2,
 			(X^2)/4
-			),ncol=3,nrow=3)
-	return(out)
+			)),ncol=3,nrow=3)
+	return(t(out))
+	}
+
+# Z matrix needed for linked locus match probability uncle/nephew
+Zuncle = function(R)
+	{
+	W = (0.5*(R^2+(1-R)^2)*(1-R))+0.25*R
+	out = matrix(rev(c(
+			0,
+			0,
+			0,
+			0,
+			W,
+			0.5-W,
+			0,
+			0.5-W,
+			W
+			)),ncol=3,nrow=3)
+	return(t(out))
+	}
+
+# Z matrix needed for linked locus match probability half uncle/nephew
+Zhuncle = function(R)
+	{
+	X = R^2+(1-R)^2
+	nR = 1-R
+	out = matrix(rev(c(
+			0,
+			0,
+			0,
+			0,
+			0.25*X*nR,
+			(1-(X*nR))*0.25,
+			0,
+			(1-(X*nR))*0.25,
+			(2+(X*nR))*0.25
+			)),ncol=3,nrow=3)
+	return(t(out))
+	}
+
+# Z matrix needed for linked locus match probability cousin
+Zcousin = function(R)
+	{
+	V = (0.25*(R^2+(1-R)^2)*(1-R)^2)+(R^2)/8
+	out = matrix(rev(c(
+			0,
+			0,
+			0,
+			0,
+			V,
+			0.25-V,
+			0,
+			0.25-V,
+			0.5+V
+			)),ncol=3,nrow=3)
+	return(t(out))
+	}
+
+# Z matrix needed for linked locus match probability grandparent
+Zgrandparent = function(R)
+	{
+	nR = 1-R
+	out = matrix(rev(c(
+			0,
+			0,
+			0,
+			0,
+			nR/2,
+			R/2,
+			0,
+			R/2,
+			nR/2
+			)),ncol=3,nrow=3)
+	return(t(out))
+	}
+
+# Z matrix needed for linked locus match probability half siblings
+Zhsibs = function(R)
+	{
+	X = R^2+(1-R)^2
+	Y = 2*R*(1-R)
+	out = matrix(rev(c(
+			0,
+			0,
+			0,
+			0,
+			X/2,
+			Y/2,
+			0,
+			Y/2,
+			X/2
+			)),ncol=3,nrow=3)
+	return(t(out))
 	}
 
 # function to find the match probability including linked loci
@@ -363,6 +454,7 @@ linkedMatchProb = function(hypothesis,linkedIndex,R)
     {
 	rr = hypothesis$relatedness
 	fst = hypothesis$fst
+	relationship = hypothesis$relationship
 	ideal.match <- c()
 	for(j in 1:ncol(hypothesis$queriedProfile))
 		{
@@ -414,7 +506,20 @@ linkedMatchProb = function(hypothesis,linkedIndex,R)
         	p4 = (p4*(1+fst))-fst
 
 		# Z matrix
-		Ztmp = Z(R[j])
+		if(relationship==2)
+			{
+			Ztmp = Zsib(R[j])
+			} else if(relationship==3) {
+			Ztmp = Zuncle(R[j])
+			} else if(relationship==4) {
+			Ztmp = Zhuncle(R[j])
+			} else if(relationship==5) {
+			Ztmp = Zcousin(R[j])
+			} else if(relationship==6) {
+			Ztmp = Zgrandparent(R[j])
+			} else if(relationship==7) {
+			Ztmp = Zhsibs(R[j])
+			}
 
         	if(kn1[1]==kn1[2])
 			{
@@ -462,7 +567,7 @@ linkedMatchProb = function(hypothesis,linkedIndex,R)
 
 
 # Function to find the difference between the match probability with/without linkage
-linkage = function(hypothesis)
+linkage = function(hypothesis,factor=TRUE)
 	{
 	# combinations of CSP markers
 	combs = combinations(length(hypothesis$alleleDb),2) 
@@ -480,18 +585,32 @@ linkage = function(hypothesis)
 	# matrix of linked loci
 	toLink = combs[unlist(index),,drop=FALSE]
 	if(any(table(toLink)>1)) stop("A locus is linked to more than one other locus")
+	# do not perform linkage if an unknown relationship
+	if(is.null(hypothesis$relationship)) toLink = NULL
 	R = unlist(R)[!is.na(unlist(R))]
-    # get linked match probability
+	# get non-linked match probability
+	nonLinked = matchProb(hypothesis,hypothesis$relatedness,hypothesis$fst)
+    	# get linked match probability
 	if(nrow(toLink)==0)
 	    {
-        linked = matchProb(hypothesis,hypothesis$relatedness,hypothesis$fst)
+        linked = nonLinked
 	    } else {
         linked = linkedMatchProb(hypothesis,toLink,R)
 	    }
-	# get non-linked match probability
-	nonLinked = matchProb(hypothesis,hypothesis$relatedness,hypothesis$fst)
+	if(!factor) return(linked)
 	# return 
 	out = linked/nonLinked
     return(out)
+	}
+
+# wrapper to get linked or unlinked match probability
+getMatchProb = function(hypothesis)
+	{
+	if(hypothesis$relationship%in%c(0,1))
+		{
+		matchProb(hypothesis,hypothesis$relatedness,hypothesis$fst)
+		} else {
+		linkage(hypothesis,FALSE)
+		}
 	}
 
