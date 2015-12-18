@@ -35,6 +35,7 @@ in RFU.
 }
 \seealso{read.known.profiles}
 \examples{
+\dontrun{
 # datapath to example files
 datapath = file.path(system.file("extdata", package="likeLTD"),"laboratory")
 
@@ -48,4 +49,5 @@ admin = pack.admin.input.peaks(
 
 # read csp
 csp = read.peaks.profile(admin$peaksFile)
+}
 }

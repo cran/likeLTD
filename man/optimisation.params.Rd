@@ -64,6 +64,7 @@
   \code{DEoptim::DEoptim}.
 }
 \examples{
+\dontrun{
 # datapath to example files
 datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
@@ -92,6 +93,7 @@ hypD = do.call(defence.hypothesis, append(admin,args))
 # Get parameters for optimisation
 paramsP = optimisation.params(hypP)
 paramsD = optimisation.params(hypD)
+}
 }
 
 

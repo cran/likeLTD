@@ -19,6 +19,7 @@ selected.
 }
 \seealso{read.csp.profile, read.known.profiles}
 \examples{
+\dontrun{
 # datapath to example files
 datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
@@ -32,4 +33,5 @@ admin = pack.admin.input(
 
 # get uncertain profile
 read.unc.profile(admin$cspFile)
+}
 }

@@ -38,6 +38,7 @@ function.
 }
 \seealso{read.unc.profile, read.known.profiles}
 \examples{
+\dontrun{
 # datapath to example files
 datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
@@ -51,4 +52,5 @@ admin = pack.admin.input(
 
 # get CSP
 read.csp.profile(admin$cspFile)
+}
 }

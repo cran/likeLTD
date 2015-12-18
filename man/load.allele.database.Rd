@@ -41,6 +41,7 @@ gives the mean longest uninterrupted sequence for that allele.
 }
 \seealso{read.unc.profile, read.known.profiles}
 \examples{
+\dontrun{
 # datapath to example files
 datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
@@ -54,4 +55,5 @@ admin = pack.admin.input(
 
 # get allele database
 load.allele.database(kit=admin$kit)
+}
 }

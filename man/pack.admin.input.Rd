@@ -16,6 +16,7 @@
 \description{Packs and verifies administrative information. Only used in allele
 report.}
 \examples{
+\dontrun{
 # datapath to example files
 datapath = file.path(system.file("extdata", package="likeLTD"),"hammer")
 
@@ -26,5 +27,6 @@ admin = pack.admin.input(
             caseName = "hammer",
 	    kit= "SGMplus"
              )
+}
 }
 

@@ -38,6 +38,7 @@ marks. The values are the name of the allles in that individual's profile for
 that locus.
 }
 \examples{
+\dontrun{
 ######################
 # Peak heights model #
 ######################
@@ -71,4 +72,5 @@ admin = pack.admin.input(
 
 # get reference profiles
 read.known.profiles(admin$refFile)
+}
 }

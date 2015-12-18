@@ -212,7 +212,7 @@ if(likeMatrix==TRUE) return(result)
       stop("Objective function over/underflow")
     }
     # If result is infinite make sure it is -Inf
-    if(is.infinite(result)) result = -Inf 
+    if(is.infinite(result)|is.na(result)) result = -Inf 
     
     # Linkage adjustment
     if(linkBool)
