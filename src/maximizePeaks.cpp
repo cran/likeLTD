@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <iterator>
 #include <algorithm>
 #include <R_ext/Error.h>
 
@@ -256,7 +257,7 @@ SEXP getProbabilitiesSDO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP 
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -378,7 +379,7 @@ SEXP getProbabilitiesSDO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP 
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -494,10 +495,10 @@ SEXP getProbabilitiesSDO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP 
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -515,8 +516,6 @@ SEXP getProbabilitiesSDO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP 
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -524,7 +523,7 @@ SEXP getProbabilitiesSDO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP 
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -588,7 +587,7 @@ SEXP getProbabilitiesSO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -704,7 +703,7 @@ SEXP getProbabilitiesSO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -806,10 +805,10 @@ SEXP getProbabilitiesSO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -827,8 +826,6 @@ SEXP getProbabilitiesSO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -836,7 +833,7 @@ SEXP getProbabilitiesSO(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -900,7 +897,7 @@ SEXP getProbabilitiesSD(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -1017,7 +1014,7 @@ SEXP getProbabilitiesSD(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -1119,10 +1116,10 @@ SEXP getProbabilitiesSD(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -1140,8 +1137,6 @@ SEXP getProbabilitiesSD(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -1149,7 +1144,7 @@ SEXP getProbabilitiesSD(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP m
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -1213,7 +1208,7 @@ SEXP getProbabilitiesS(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP in
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -1325,7 +1320,7 @@ SEXP getProbabilitiesS(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP in
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -1360,7 +1355,7 @@ SEXP getProbabilitiesS(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP in
 		std::vector<genoStruct> muA(genotypeVec.size(),tmpMu),muS(genotypeVec.size(),tmpMu);
 		int matchIndex;
 		double diff;
-		double overStutterDose, stutterRate;
+		double stutterRate;
 		// effective dose for stutter and allelic
 		for(int x=0; x<nGen; ++x)
 			{
@@ -1417,10 +1412,10 @@ SEXP getProbabilitiesS(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP in
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -1438,8 +1433,6 @@ SEXP getProbabilitiesS(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP in
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -1447,7 +1440,7 @@ SEXP getProbabilitiesS(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, SEXP in
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -1511,7 +1504,7 @@ SEXP getProbabilitiesSDO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -1645,7 +1638,7 @@ SEXP getProbabilitiesSDO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -1759,10 +1752,10 @@ SEXP getProbabilitiesSDO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -1774,12 +1767,12 @@ SEXP getProbabilitiesSDO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS
             		doseArray[matchIndex][i] += gammaMuVec[j].dose;
             		}
 		// add dropin doses to dose array
-		for(int j=0; j<fragVecN.size(); j++)
+		for(unsigned int j=0; j<fragVecN.size(); j++)
 			{
 			if(!(fragVecN[j]<-1&&fragVecN[j]>-100))
 		    		{
 		    		int matchIndex=0;
-		    		for(int k=0; k<dbVals.size(); k++)
+		    		for(unsigned int k=0; k<dbVals.size(); k++)
 			    		{
 			    		double diff = std::fabs(dbVals[k]-fragVecN[j]); 
                 			if(diff<0.0001)
@@ -1798,8 +1791,6 @@ SEXP getProbabilitiesSDO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -1807,7 +1798,7 @@ SEXP getProbabilitiesSDO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -1871,7 +1862,7 @@ SEXP getProbabilitiesSO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -2000,7 +1991,7 @@ SEXP getProbabilitiesSO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -2103,10 +2094,10 @@ SEXP getProbabilitiesSO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -2118,12 +2109,12 @@ SEXP getProbabilitiesSO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
             		doseArray[matchIndex][i] += gammaMuVec[j].dose;
             		}
 		// add dropin doses to dose array
-		for(int j=0; j<fragVecN.size(); j++)
+		for(unsigned int j=0; j<fragVecN.size(); j++)
 			{
 			if(!(fragVecN[j]<-1&&fragVecN[j]>-100))
 		    		{
 		    		int matchIndex=0;
-		    		for(int k=0; k<dbVals.size(); k++)
+		    		for(unsigned int k=0; k<dbVals.size(); k++)
 			    		{
 			    		double diff = std::fabs(dbVals[k]-fragVecN[j]); 
                 			if(diff<0.0001)
@@ -2143,8 +2134,6 @@ SEXP getProbabilitiesSO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -2152,7 +2141,7 @@ SEXP getProbabilitiesSO_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -2215,7 +2204,7 @@ SEXP getProbabilitiesSD_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -2344,7 +2333,7 @@ SEXP getProbabilitiesSD_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -2447,10 +2436,10 @@ SEXP getProbabilitiesSD_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{		       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -2462,12 +2451,12 @@ SEXP getProbabilitiesSD_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
             		doseArray[matchIndex][i] += gammaMuVec[j].dose;
             		}
 		// add dropin doses to dose array
-		for(int j=0; j<fragVecN.size(); j++)
+		for(unsigned int j=0; j<fragVecN.size(); j++)
 			{
 			if(!(fragVecN[j]<-1&&fragVecN[j]>-100))
 		    		{
 		    		int matchIndex=0;
-		    		for(int k=0; k<dbVals.size(); k++)
+		    		for(unsigned int k=0; k<dbVals.size(); k++)
 			    		{
 			    		double diff = std::fabs(dbVals[k]-fragVecN[j]); 
                 			if(diff<0.0001)
@@ -2487,8 +2476,6 @@ SEXP getProbabilitiesSD_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -2496,7 +2483,7 @@ SEXP getProbabilitiesSD_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS,
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)
@@ -2560,7 +2547,7 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
 	int const nCombs = INTEGER(GET_DIM(genotypeArray))[1];
 	int const nGen = INTEGER(GET_DIM(genotypeArray))[0];
 	int const nCont = length(DNAcont);
-	int const nFrag = length(fragLengths);
+	unsigned int const nFrag = length(fragLengths);
 	int const nDeg = length(degradation);
         int const nDat = length(databaseVals);
 	// create some objects
@@ -2684,7 +2671,7 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
 	SEXP lusvals = PROTECT(duplicate(LUSvals));
 	double * lusvals_ptr     = REAL(lusvals);
 	std::vector<double> fragVecN, fragVecL, fragVecP,lusVals;
-	for(int i=0; i<nFrag; ++i)
+	for(unsigned int i=0; i<nFrag; ++i)
 		{
 		fragVecN.push_back(fragNvec_ptr[i]);
 		fragVecL.push_back(fragLvec_ptr[i]);
@@ -2720,7 +2707,7 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
 		std::vector<genoStruct> muA(genotypeVec.size(),tmpMu),muS(genotypeVec.size(),tmpMu);
 		int matchIndex;
 		double diff;
-		double overStutterDose, stutterRate;
+		double stutterRate;
 		// effective dose for stutter and allelic
 		for(int x=0; x<nGen; ++x)
 			{
@@ -2777,10 +2764,10 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
 			gammaMuVec[x] = tmpMu2;
 			}
         	// slot doses into dose array
-        	for(int j=0; j<gammaMuVec.size(); j++)
+        	for(unsigned int j=0; j<gammaMuVec.size(); j++)
             		{       
             		int matchIndex = 0;         
-            		for(int k=0; k<dbVals.size(); k++)
+            		for(unsigned int k=0; k<dbVals.size(); k++)
                 		{
                 		double diff = std::fabs(dbVals[k]-gammaMuVec[j].genotype); 
                 		if(diff<0.0001)
@@ -2792,12 +2779,12 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
             		doseArray[matchIndex][i] += gammaMuVec[j].dose;
             		}
 		// add dropin doses to dose array
-		for(int j=0; j<fragVecN.size(); j++)
+		for(unsigned int j=0; j<fragVecN.size(); j++)
 			{
 			if(!(fragVecN[j]<-1&&fragVecN[j]>-100))
 		    		{
 		    		int matchIndex=0;
-		    		for(int k=0; k<dbVals.size(); k++)
+		    		for(unsigned int k=0; k<dbVals.size(); k++)
 			    		{
 			    		double diff = std::fabs(dbVals[k]-fragVecN[j]); 
                 			if(diff<0.0001)
@@ -2817,8 +2804,6 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
 			// loop over replicates
 			for(int k=0; k<nRep; k++)
 		    		{
-	        		int matchIndex = 0;   
-	        		bool matchFlag = false; 
 		    		// only do something if some hypothesised dose
 		    		if(doseArray[j][i]!='\0'&&doseArray[j][i]!=0)
 		        		{
@@ -2826,7 +2811,7 @@ SEXP getProbabilitiesS_dropin(SEXP genotypeArray, SEXP DNAcont, SEXP gradientS, 
 		        		// which allele are we looking at?
 		        		int matchIndex = 0;   
 		        		bool matchFlag = false;     
-        				for(int l=0; l<allelesVec[k].size(); l++)
+        				for(unsigned int l=0; l<allelesVec[k].size(); l++)
         	                		{
         	                		double diff = std::fabs(dbVals[j]-allelesVec[k][l]);  
         	                		if(diff<0.0001)

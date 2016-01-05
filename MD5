@@ -1,4 +1,4 @@
-022014efa8a2fac2a027c680c590af5a *DESCRIPTION
+52dc321590b480fbcf77250066995850 *DESCRIPTION
 15fa03861b6d006f4668d60290741480 *NAMESPACE
 dd2b86ad818c3210806b47ee13a67360 *R/genetics-peaks.R
 128d14d6b08bca6cc5b6d743f3f2d000 *R/genetics.R
@@ -11,7 +11,7 @@ ebabd08a9efa1b410fd128d39d8e3e25 *R/maximize.R
 a16003fa5685df852dca4cc382e1881d *R/plotter.R
 3bfff82d46ca349a34cdce459d1a1853 *R/reports-peaks.R
 194b9a0407b3526b3e668e4a1474ed32 *R/reports.R
-15991d73431869faf41e9ceaf1ba816f *build/vignette.rds
+7d63c382eef37ef3257fd42df13b7922 *build/vignette.rds
 a7911278d330805d136b3a1c0128e82b *data/DNA17-db.txt.gz
 cc6789997af68c989d6905214dd826e9 *data/Identifiler-db.txt.gz
 f7c6da5bf953c93249a1a2452188fa15 *data/SGMplus-db.txt.gz
@@ -23,10 +23,10 @@ f7c6da5bf953c93249a1a2452188fa15 *data/SGMplus-db.txt.gz
 29ae485892606502f4b192c9a22addff *demo/plotter.R
 f009ce7f7919f919b2633167d3be6509 *demo/timings.R
 ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
-e42128152e61e7717d5e2b3096bb22a2 *inst/doc/likeLTDguide.pdf
+795eb66b3a276bd0db4d1396b85ba5fc *inst/doc/likeLTDguide.pdf
 c6267931f2d7463e886aff9a87a9b84a *inst/doc/usage.R
 13b178aa990fb4f02df6675455359d2f *inst/doc/usage.Rnw
-c2b3332a0a89e7f94b0ff7c2e6d5df7d *inst/doc/usage.pdf
+0440374ee63b753d34e79fc3b0f4869b *inst/doc/usage.pdf
 b2c3483a955137785d515e228d718c5e *inst/extdata/hammer/hammer-CSP.csv
 ab15fe8e372733a647a4d69c7166c3c2 *inst/extdata/hammer/hammer-reference.csv
 cea6b7597cb7d8598cb8c2e89d0063d4 *inst/extdata/hammer/space-CSP.csv
@@ -99,11 +99,11 @@ ffc40875f3d8b6bd55fc4d1b4a35d7de *man/unitTests.likeLTD.Rd
 d3c78a4af7ab4baa9929080d5fe6a069 *src/Makevars
 d3c78a4af7ab4baa9929080d5fe6a069 *src/Makevars.win
 8fb1f0d55ca4e388e9c8145f075d78ab *src/config.h
-ad67f221a24810fc9aa64d79bc8bb8bf *src/gammaDist.cpp
+1ddc2c55743b91f1a7fd6cd4e34262ce *src/gammaDist.cpp
 8c1035f4d3d8b87aea3a1b3f58eba818 *src/gammaDist.h
 1ad1e6baeece0f25020fcc5b4965df42 *src/genetics.cpp
 c3219013ea9b21cf21badf46e824077d *src/genetics.h
-4a9ccc0c2cbfbf5a90d685cde09a0f6e *src/maximizePeaks.cpp
+52ca85a506863526d5cccc68c5b0a627 *src/maximizePeaks.cpp
 0709711cd714cc4804ffaedaee83ff55 *src/maximizePeaks.h
 e28073c59178a4db46e5d3717e036b3c *src/module.cpp
 b2c1dabfaa2aefe1a4683626d88c5e48 *src/objectives.cpp
