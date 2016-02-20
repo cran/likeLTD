@@ -463,6 +463,8 @@ evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim
 	# number of convergence thresholds
 	# for each step, run a DEoptimLoop both for P and D, until each converges at that steps accuracy
 
+	begin = Sys.time()
+
 	# set seed
 	if(is.null(seed.input)) 
 	    {
@@ -667,9 +669,14 @@ evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim
 
 	print(Ld)
 	print(Lp)
+	
+	end = Sys.time()
+	runtime = list(elapsed=difftime(end,begin),
+			start=begin,
+			end=end)
 
 	# return all results
-	return(list(Pros=P.results,Def=D.results, WoE=WoE, Lp=Lp, Ld=Ld, seed.used=seed.used,seed.input=seed.input))
+	return(list(Pros=P.results,Def=D.results, WoE=WoE, Lp=Lp, Ld=Ld, seed.used=seed.used,seed.input=seed.input,runtime=runtime))
 	}
 
 

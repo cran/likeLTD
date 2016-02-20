@@ -575,7 +575,7 @@ probability.peaks = function(genotype,alleles,heights,DNAcont,
 	        degradation=degradation,fragLengths=fragLengths,
 		fragProbs = fragProbs,
 	        LUSvals=LUSvals,repAdjust=repAdjust,
-		dropin=dropin,dropinDeg=NULL)
+		dropin=dropin,dropinDeg=dropinDeg)
 	names(heights) = unlist(alleles)
 	# give peak heights to dropout alleles (height=0)
 	peakHeights = unlist(heights)
