@@ -1,4 +1,4 @@
-00f7f46ebf6d3c912e90bd6e682e60fd *DESCRIPTION
+42aceb9eb500719327bd3c7377a3e93a *DESCRIPTION
 15fa03861b6d006f4668d60290741480 *NAMESPACE
 dd2b86ad818c3210806b47ee13a67360 *R/genetics-peaks.R
 128d14d6b08bca6cc5b6d743f3f2d000 *R/genetics.R
@@ -23,10 +23,10 @@ f7c6da5bf953c93249a1a2452188fa15 *data/SGMplus-db.txt.gz
 29ae485892606502f4b192c9a22addff *demo/plotter.R
 f009ce7f7919f919b2633167d3be6509 *demo/timings.R
 ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
-eaae461725e6f2228efb525dbf1a26ab *inst/doc/likeLTDguide.pdf
+f4c1dcab61ab57cecc65f958a3fb4125 *inst/doc/likeLTDguide.pdf
 c6267931f2d7463e886aff9a87a9b84a *inst/doc/usage.R
 13b178aa990fb4f02df6675455359d2f *inst/doc/usage.Rnw
-a7c378a8733a7dc513644dd330890369 *inst/doc/usage.pdf
+05e12c0eca4c715fa98eb0291a0afbec *inst/doc/usage.pdf
 b2c3483a955137785d515e228d718c5e *inst/extdata/hammer/hammer-CSP.csv
 ab15fe8e372733a647a4d69c7166c3c2 *inst/extdata/hammer/hammer-reference.csv
 cea6b7597cb7d8598cb8c2e89d0063d4 *inst/extdata/hammer/space-CSP.csv
@@ -99,11 +99,11 @@ ffc40875f3d8b6bd55fc4d1b4a35d7de *man/unitTests.likeLTD.Rd
 d3c78a4af7ab4baa9929080d5fe6a069 *src/Makevars
 d3c78a4af7ab4baa9929080d5fe6a069 *src/Makevars.win
 8fb1f0d55ca4e388e9c8145f075d78ab *src/config.h
-1ddc2c55743b91f1a7fd6cd4e34262ce *src/gammaDist.cpp
+296b11a02a791cbfb4a5d11d02b1ae59 *src/gammaDist.cpp
 8c1035f4d3d8b87aea3a1b3f58eba818 *src/gammaDist.h
 1ad1e6baeece0f25020fcc5b4965df42 *src/genetics.cpp
 c3219013ea9b21cf21badf46e824077d *src/genetics.h
-74d52a870e2a37bde387f42445da9d7e *src/maximizePeaks.cpp
+da8f8662cd61371e72dbe355d10fe9bf *src/maximizePeaks.cpp
 0709711cd714cc4804ffaedaee83ff55 *src/maximizePeaks.h
 e28073c59178a4db46e5d3717e036b3c *src/module.cpp
 b2c1dabfaa2aefe1a4683626d88c5e48 *src/objectives.cpp
