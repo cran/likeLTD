@@ -604,9 +604,9 @@ linkage = function(hypothesis,factor=TRUE)
 	}
 
 # wrapper to get linked or unlinked match probability
-getMatchProb = function(hypothesis)
+getMatchProb = function(hypothesis,doLinkage=TRUE)
 	{
-	if(hypothesis$relationship%in%c(0,1))
+	if(hypothesis$relationship%in%c(0,1)|doLinkage==FALSE)
 		{
 		matchProb(hypothesis,hypothesis$relatedness,hypothesis$fst)
 		} else {

@@ -260,7 +260,7 @@ SEXP fractionsAndHet(SEXP genotypes, SEXP fractions)
 
 // Computes relatedness factors and multiplies to inout.
 SEXP relatednessFactors(SEXP inout, SEXP relatednessR, SEXP genotypes, 
-                        SEXP queriedR, SEXP frequenciesR)
+                        SEXP queriedR, SEXP frequenciesR, SEXP rareIndex)
 {
 # ifdef OPENMP_STACK
 //    uintptr_t const oldstack = R_CStackLimit;
@@ -300,6 +300,7 @@ SEXP relatednessFactors(SEXP inout, SEXP relatednessR, SEXP genotypes,
   double const frequencies[2] = { REAL(frequenciesR)[0],   
                                   REAL(frequenciesR)[1]  }; 
   int const queried[2] = { INTEGER(queriedR)[0], INTEGER(queriedR)[1]  }; 
+  int const rare = { INTEGER(rareIndex)[0] }; 
 
   // The following builds up the factors which will modify the inout vector. 
   // There are only four possible factors corresponding to four possible
@@ -327,12 +328,13 @@ SEXP relatednessFactors(SEXP inout, SEXP relatednessR, SEXP genotypes,
     bool const first  = i_geno[0] == queried[0] or i_geno[1] == queried[0];
     bool const second = i_geno[0] == queried[1] or i_geno[1] == queried[1];
     bool const is_homozygote = i_geno[0] == i_geno[1];
+    bool const is_rare = i_geno[0] == rare && i_geno[0] == rare;
 
     double result = factor0;
-    if(first)  result += is_homozygote ? factors[0]: factors[0] * 0.5;
-    if(second) result += is_homozygote ? factors[1]: factors[1] * 0.5;
+    if(first)  result += is_homozygote&&!is_rare ? factors[0]: factors[0] * 0.5;
+    if(second) result += is_homozygote&&!is_rare ? factors[1]: factors[1] * 0.5;
     if(first and second)
-      result += is_homozygote ? factors[2]: factors[2] * 0.5;
+      result += is_homozygote&&!is_rare ? factors[2]: factors[2] * 0.5;
 
     out_ptr[j] *= result;
   }

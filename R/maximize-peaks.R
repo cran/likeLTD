@@ -90,8 +90,8 @@ optimisation.params.peaks <- function(hypothesis, verbose=TRUE, fixed=NULL,
                                 logObjective=TRUE, logDegradation=TRUE,
                                 arguments=NULL, zero=1e-6, throwError=FALSE,
                                 withPenalties=TRUE, doLinkage=TRUE, objective=NULL, 
-				iterMax=75,likeMatrix=FALSE,diagnose=FALSE,DEoptimStrategy=3,
-				searchPopFactor=4,DEoptimF=0.8,DEoptimC=NULL,maxDropin=100,...) {
+				iterMax=25,likeMatrix=FALSE,diagnose=FALSE,DEoptimStrategy=3,
+				searchPopFactor=1,DEoptimF=0.8,DEoptimC=NULL,maxDropin=100,...) {
   # Creates the optimisation parameters for optim.
   #
   # optim is the optimisation function from R's stat package.
@@ -442,8 +442,8 @@ peaks.results.plot = function(hyp,res,replicate=1,toplot=NULL,fileName=NULL,...)
 		total = total + length(which(!is.na(sapply(1:ncol(CIs),FUN=function(x) inRange(heights[x],CIs[c(2,3),x])))))
 		}
 	if(!is.null(fileName)) dev.off()
-	print("Proportion of peaks within 95% probability interval: ", ninetyfive/total)
-	print("Proportion of peaks within 50% probability interval: ", fifty/total)
+	print(paste0("Proportion of peaks within 95% probability interval: ", ninetyfive/total))
+	print(paste0("Proportion of peaks within 50% probability interval: ", fifty/total))
 	}
 
 
@@ -457,7 +457,13 @@ multiConverged = function(L,globalVal,tolerance,nConverged=5)
     any(sapply(L[(length(L)-nConverged):(length(L)-1)],FUN=function(x) !checkConverged(L[length(L)],x,tolerance)))|!checkConverged(L[length(L)],globalVal,tolerance)
     }
 
-evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim=TRUE, CR.start=0.1, CR.end=0.7, seed.input=NULL, converge=TRUE, nConverged=5){
+getSteps = function(sdStep,nCont,nReps)
+	{
+	if(sdStep<=8) sdStep = 8
+	ceiling(log(sdStep,8)*(nCont+1)*(nReps+1))
+	}
+
+evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim=TRUE, CR.start=0.1, CR.end=0.7, seed.input=NULL, converge=TRUE, nConverged=4, stepsFun=NULL){
 	# P.pars D.pars: parameter object created by optimisation.params()
 	# the smallest convergence threshold (ie for the last step)
 	# number of convergence thresholds
@@ -473,6 +479,9 @@ evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim
         seed.used = as.integer(seed.input)
 	    }
     set.seed(seed.used)
+
+	P.iter=P.pars$control$itermax
+	D.iter=D.pars$control$itermax
 
 	# combine the outputs outside the loop
 	P.bestmemit <- D.bestmemit <- NULL
@@ -515,7 +524,7 @@ evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim
 
 	# get standard mean standard deviation of initial optimisation phase
 	#sdStep = mean(c(sd(P.step$member$bestvalit[1:75][!is.infinite(P.step$member$bestvalit[1:75])]),sd(D.step$member$bestvalit[1:75][!is.infinite(D.step$member$bestvalit[1:75])])))
-	sdStep = max(c(sd(P.step$member$bestvalit[1:75][!is.infinite(P.step$member$bestvalit[1:75])]),sd(D.step$member$bestvalit[1:75][!is.infinite(D.step$member$bestvalit[1:75])])))
+	sdStep = max(c(sd(P.step$member$bestvalit[1:P.iter][!is.infinite(P.step$member$bestvalit[1:P.iter])]),sd(D.step$member$bestvalit[1:D.iter][!is.infinite(D.step$member$bestvalit[1:D.iter])])))
 	# sometimes sd is very low (below 1 e.g. 3locus test)
 	# if so set sd to >1 so log2(sd) is positive
 	#if(sdStep<1) sdStep = 1.5
@@ -525,7 +534,13 @@ evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim
 		{
 		nCont = length(grep("DNAcont",names(D.pars$upper)))
 		nReps = length(grep("repAdjust",names(D.pars$upper)))+1
-		n.steps = ceiling(log2(sdStep)*nCont*(nReps+1))
+		if(is.null(stepsFun))
+			{
+			n.steps = getSteps(sdStep,nCont,nReps)
+			} else {
+			if(!is.function(stepsFun)) stop("stepsFun is not a function")
+			n.steps = stepsFun(sdStep,nCont,nReps)
+			}
 		}
 
 	# retain all the likelihood ratios
@@ -555,7 +570,7 @@ evaluate.peaks <- function(P.pars, D.pars, tolerance=1e-6, n.steps=NULL, interim
             P.step <- DEoptimLoop(P.pars,tol.steps[n])
             Lp[n] = P.step$optim$bestval
 
-			# set global results
+			# set global results9.770815  287.211808    0.002604    1.518226    2.917211    2.480248    4.072314    1.057121    1.319785    1.409730    1.853134    1.842723    1.291240    1.4752
 			if(D.step$optim$bestval<GlobalDval)
 				{
 				GlobalDval = D.step$optim$bestval

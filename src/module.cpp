@@ -15,7 +15,7 @@ R_CallMethodDef callMethods[]  = {
        {"doseFraction", (DL_FUNC) &doseFraction, 3},
        {"emptyAlleles", (DL_FUNC) &emptyAlleles, 2},
        {"fractionsAndHet", (DL_FUNC) &fractionsAndHet, 2},
-       {"relatednessFactors", (DL_FUNC) &relatednessFactors, 5},
+       {"relatednessFactors", (DL_FUNC) &relatednessFactors, 6},
        {"nbthreads", (DL_FUNC) &nbthreads, 0},
        {"set_nbthreads", (DL_FUNC) &set_nbthreads, 1},
 		{"getProbabilitiesSDO", (DL_FUNC) &getProbabilitiesSDO, 16},

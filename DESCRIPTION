@@ -6,13 +6,13 @@ Description: Tools to determine DNA profile Weight of Evidence.
 Depends: R (>= 2.10), DEoptim, ggplot2, gtools, rtf
 Suggests: svUnit, scales
 Imports: gdata, tools, tcltk
-Version: 6.0.4
-Date: 2016-02-21
+Version: 6.1.0
+Date: 2016-05-30
 Author: David Balding, Adrian Timpson, Christopher Steele, Mayeul d'Avezac, James Hetherington.
 Maintainer: Christopher Steele <c.steele.11@ucl.ac.uk>
 License: GPL-3
 URL: https://sites.google.com/site/baldingstatisticalgenetics/
-Packaged: 2016-02-21 17:04:29 UTC; csteele
 NeedsCompilation: yes
+Packaged: 2016-05-30 14:20:37 UTC; csteele
 Repository: CRAN
-Date/Publication: 2016-02-21 19:51:57
+Date/Publication: 2016-05-30 16:58:13

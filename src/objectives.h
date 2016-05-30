@@ -49,7 +49,7 @@ extern "C" {
   //!          in inout.
   //! \return NULL value. inout is both input and output.
   SEXP relatednessFactors(SEXP inout, SEXP relatednessR, SEXP genotypes,
-                          SEXP queriedR, SEXP frequenciesR);
+                          SEXP queriedR, SEXP frequenciesR, SEXP rareIndex);
 #ifdef __cplusplus
 }
 #endif

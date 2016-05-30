@@ -4,9 +4,9 @@
 \usage{optimisation.params.peaks(hypothesis, verbose=TRUE, fixed=NULL,
                            logObjective=TRUE, logDegradation=TRUE,
                            arguments=NULL, zero=1e-6, throwError=FALSE,
-                           withPenalties=TRUE, doLinkage=TRUE,objective=NULL, iterMax=75, 
+                           withPenalties=TRUE, doLinkage=TRUE,objective=NULL, iterMax=25, 
                            likeMatrix=FALSE,diagnose=FALSE,DEoptimStrategy=3,
-			   searchPopFactor=4,DEoptimF=0.8,DEoptimC=NULL,
+			   searchPopFactor=1,DEoptimF=0.8,DEoptimC=NULL,
 				maxDropin=100,\dots)}
 \arguments{
   \item{hypothesis}{Hypothesis from which to perform maximization}
@@ -30,7 +30,8 @@
 		    inverse match probability with linkage taken into account, and \eqn{IMP_U} 
 		    is the same but without linkage taken into account.}
   \item{objective}{Objective function produced from create.likelihood.vectors.peaks}
-  \item{iterMax}{Number of iterations to run the optimisation for}
+  \item{iterMax}{Number of iterations to run the optimisation for before checking for 
+convergence within each step.}
   \item{likeMatrix}{Whether to return likelihoods for every genotype combination, or 
   a likelihood summed over all genotypes after optimisation. Set to TRUE 
   for individual genotype likelihoods. This is used for 
