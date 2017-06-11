@@ -1,8 +1,8 @@
-a1f07539230724b673febd61b517f85d *DESCRIPTION
+af3dff8ef7b427cf97b01fff7dedd574 *DESCRIPTION
 15fa03861b6d006f4668d60290741480 *NAMESPACE
 dd2b86ad818c3210806b47ee13a67360 *R/genetics-peaks.R
 4aa890d4f1ed0354a80494cf3a03ad5d *R/genetics.R
-3fa5c51107ab187aa5a9878d467e4a88 *R/hypothesis-peaks.R
+c709c0f2b79b1332dd5cab1e313ab142 *R/hypothesis-peaks.R
 f971e4c88633757d1e66600a76910bc9 *R/hypothesis.R
 d1da1c9f4872277f742264b107428451 *R/kMeans.R
 db0ec4a5e480ead74586fe3a4ffb5cbf *R/maximize-peaks.R
@@ -10,7 +10,7 @@ db0ec4a5e480ead74586fe3a4ffb5cbf *R/maximize-peaks.R
 8a87d32b3ab634f273f615e1b5448241 *R/objectives-peaks.R
 42b07bb1e6f365e6c57c50f31cf03120 *R/objectives.R
 a16003fa5685df852dca4cc382e1881d *R/plotter.R
-922172af5df8c9575a71f80394b989b5 *R/reports-peaks.R
+a50bf309e7e5d71d349fdaaf59637f60 *R/reports-peaks.R
 055dcf829d00c8ad0d79ec86f40c7e58 *R/reports.R
 edf37d7afb6383909d4ca1183f302a66 *build/vignette.rds
 a7911278d330805d136b3a1c0128e82b *data/DNA17-db.txt.gz
@@ -24,12 +24,12 @@ f7c6da5bf953c93249a1a2452188fa15 *data/SGMplus-db.txt.gz
 29ae485892606502f4b192c9a22addff *demo/plotter.R
 f009ce7f7919f919b2633167d3be6509 *demo/timings.R
 ed85b76aab7ddb1066891f13f78b86e9 *inst/CITATION
-7289f2e42edbbea8d32939a8a10087e9 *inst/doc/likeLTDguide.pdf
+507de1c5dd06b9c9727ea0fe0f88e480 *inst/doc/likeLTDguide.pdf
 c6267931f2d7463e886aff9a87a9b84a *inst/doc/usage.R
 13b178aa990fb4f02df6675455359d2f *inst/doc/usage.Rnw
-6329a0b131176154ed4978ce10d3fc0c *inst/doc/usage.pdf
-a5855718948a7611c8686557802a60db *inst/extdata/example/exampleCSP.csv
-9b2aac1d657644c5097018c19f72ae24 *inst/extdata/example/exampleRef.csv
+e4d9f9d1500266f61835e44b8b9331be *inst/doc/usage.pdf
+28dda077ee1a159a1adf3ab3221fed6a *inst/extdata/example/exampleCSP.csv
+7ef98f58eb3e8e3b99794e1bd142256f *inst/extdata/example/exampleRef.csv
 5ff086df1eeb0aef041ba2edf93846c6 *inst/extdata/hammer/hammer-CSP.csv
 18b7d82481a9e8d12530d22bc620cd6d *inst/extdata/hammer/hammer-reference.csv
 88d5c3de0eca8b0d1bbb03afc5b63db2 *inst/extdata/hammer/space-CSP.csv

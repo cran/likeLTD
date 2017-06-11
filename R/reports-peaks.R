@@ -640,6 +640,7 @@ create.hypothesis.string.peaks = function(hypP)
 	return(list(pros=pros,def=def))
 	}
 
+# function to output alleles for each K
 create.contributor.table = function(refs)
 	{
 	refLabels = NULL
@@ -657,10 +658,6 @@ create.contributor.table = function(refs)
 	return(out)
 	}
 
-contributor.peak.heights = function()
-	{
-	
-}
 
 # function to create the parts of the report documents that are present in both allele report and output report
 common.report.section.peaks = function(names,gen,admin,warnings=NULL,hypothesisString=NULL,resTable=NULL,figRes=300)
@@ -739,7 +736,9 @@ if(length(admin$detectionThresh)==1)
 	    heightsTmp=gen$csp$heights[[i]][j,index]
 	    colnames(heightsTmp)= colnames(allelesTmp)
 	    toPrint = rbind(allelesTmp,heightsTmp)
+	    if(ncol(toPrint)==0) toPrint=matrix(NA,nrow=2,ncol=0)
 	    toPrint = cbind(c("Allele","Height"),toPrint)
+	    toPrint = as.data.frame(toPrint)
 	    colnames(toPrint)[1] = rownames(gen$csp$alleles[[i]])[j]
 	    colnames(toPrint)[-1] = rep(" ",ncol(toPrint)-1)
 	    addTable(doc,  toPrint, col.justify='L', header.col.justify='L')
@@ -813,6 +812,7 @@ if(length(admin$detectionThresh)==1)
 	return(doc)
 	}
 
+# unusual alleles at a locus
 locus.unusual = function(csp,refs,alleleDb,locus)
 	{
 	thisDB = alleleDb[which(alleleDb$Marker==locus),]
@@ -923,7 +923,7 @@ getQpeaks = function(csp,Qref,replace=0)
 	return(heightsQ)
 }
 
-
+# function to get useful info for reports
 pack.genetics.for.peaks.reports = function(cspFile,refFile,csp=NULL,refs=NULL,dbFile=NULL,kit=NULL,threshold=20)
     {
     belowThreshold=FALSE
