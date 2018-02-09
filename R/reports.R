@@ -178,7 +178,8 @@ return(result)}
 unusual.alleles.per.table <- function(table,afreq){
 	# finds unusual alleles in any specific table, (provided in original listed format)
 	# Get names of populations in database
-	pops = colnames(afreq)[4:ncol(afreq)]	# first 3 columns are Marker, Allele, BP
+	startCol = grep("BP",colnames(afreq))+1
+	pops = colnames(afreq)[startCol:ncol(afreq)]	# first 3 columns are Marker, Allele, BP
 	rare <- matrix(ncol=3+length(pops),nrow=0)
 	colnames(rare) = c("locus","allele",paste(pops,".freq",sep=""),"error")
 	loci <- colnames(table); loci <- loci[loci!='queried']# ref table has a unwanted column 'queried'
@@ -210,20 +211,21 @@ unusual.alleles.per.table <- function(table,afreq){
 							}
 						if(any(sizeCondition)) 
 							{
-							frame <- matrix(c(locus,allele,x[4:length(x)],'NA'),ncol=3+length(pops))
+							print(paste(locus,allele,sep="_",collapse="_"))
+							frame <- matrix(c(locus,allele,x[startCol:length(x)],'NA'),ncol=3+length(pops))
 							colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
         	    					rare <- rbind(rare, frame)
 							}
         					}
 					if(nrow(x)==0)
 						{ # if the allele is absent from database it is probably a typo	
-						frame <- matrix(c(locus,allele,rep(NA,times=length(pops),"Allele absent from database,check for typo")),ncol=3+length(pops))
+						frame <- matrix(c(locus,allele,rep(NA,times=length(pops)),"Allele absent from database,check for typo"),ncol=3+length(pops))
 						colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
             					rare <- rbind(rare, frame)
           					}
 					if(nrow(x)>1)
 						{ # if the allele is more than once there is a problem with the database!
-						frame <- matrix(c(locus,allele,rep(NA,times=length(pops),"Allele present multiple times in database")),ncol=3+length(pops))
+						frame <- matrix(c(locus,allele,rep(NA,times=length(pops)),"Allele present multiple times in database"),ncol=3+length(pops))
 						colnames(frame) = c("locus","allele",paste(pops,".freq",sep=""),"error")
             					rare <- rbind(rare, frame)
           					}
@@ -237,12 +239,13 @@ unusual.alleles <- function(genetics){
 	#  creates and formats a combined table of unusual alleles
 
 	t1.tmp <- unusual.alleles.per.table(genetics$refData,genetics$afreq)
-	t1 <- cbind(data.frame(source=rep('Reference profiles',nrow(t1.tmp))),t1.tmp)
+	t1 <- cbind(rep('Reference profiles',nrow(t1.tmp)),t1.tmp)
 	t2.tmp <- unusual.alleles.per.table(genetics$cspData,genetics$afreq)
-	t2 <- cbind(data.frame(source=rep('Crime scene certain',nrow(t2.tmp))),t2.tmp)
+	t2 <- cbind(rep('Crime scene certain',nrow(t2.tmp)),t2.tmp)
 	t3.tmp <- unusual.alleles.per.table(genetics$uncData,genetics$afreq)
-	t3 <- cbind(data.frame(source=rep('Crime scene uncertain',nrow(t3.tmp))),t3.tmp)
-	table <- rbind(t1,t2,t3)
+	t3 <- cbind(rep('Crime scene uncertain',nrow(t3.tmp)),t3.tmp)
+	colnames(t1)[1]=colnames(t2)[1]=colnames(t3)[1]="source"
+	table <- as.data.frame(rbind(t1,t2,t3))
 	if(nrow(table)==0)table <- data.frame(status='no unusual alleles present')
 return(table)}
 
@@ -341,9 +344,12 @@ hyp.P <- function(genetics){
 	Q <- paste(genetics$nameQ,'(Q)') 
 	U <- paste(genetics$P.hyp$nUnknowns,'U',sep='')
 	HP <- paste('Prosecution Hypothesis:',paste(c(Q,genetics$nameK,U),collapse=' + ')  )
-	if(genetics$doDropin)
-		{
-		HP = paste0(HP," + dropin")
+	if(!is.null(genetics$doDropin))
+	    {
+	    if(genetics$doDropin)
+		    {
+		    HP = paste0(HP," + dropin")
+		    }
 		}
 	if(is.null(genetics$nameK))HP <- NULL # genetics object is different for allele report or final report
 return(HP)}
@@ -352,9 +358,12 @@ hyp.D <- function(genetics){
 	X <- 'Unknown (X)'
 	U <- paste(genetics$D.hyp$nUnknowns-1,'U',sep='')
 	HD <- paste('Defence Hypothesis:',paste(c(X,genetics$nameK,U),collapse=' + ') )
-	if(genetics$doDropin)
-		{
-		HD = paste0(HD," + dropin")
+	if(!is.null(genetics$doDropin))
+	    {
+	    if(genetics$doDropin)
+		    {
+		    HD = paste0(HD," + dropin")
+		    }
 		}
 	if(is.null(genetics$nameK))HD <- NULL # genetics object is different for allele report or final report
 return(HD)}
@@ -761,22 +770,6 @@ hom <- function(pa, fst=0.02)
 
     }
 
-# homozygous match probability
-homAllele <- function(pa, fst=0.02)
-
-    {
-
-    numerator = ((2*fst)+((1-fst)*pa))*((2*fst)+((1-fst)*pa))
-
-    denominator = (1+fst)*(1+fst)
-
-    return(numerator/denominator)
-
-    }
-
-
-
-
 # heterozygous match probability
 het <- function(pa, pb, fst=0.02)
 
@@ -790,18 +783,6 @@ het <- function(pa, pb, fst=0.02)
 
     }
 
-# heterozygous match probability
-hetAllele <- function(pa, pb, fst=0.02)
-
-    {
-
-    numerator = (fst+((1-fst)*pa))*(fst+((1-fst)*pb))
-
-    denominator = (1+fst)*(1+fst)
-
-    return(2*(numerator/denominator))
-
-    }
 
 #singleFst = function(p,fst)
 #	{
@@ -813,6 +794,7 @@ matchProb = function(hypothesis,rr,fst=0.02,sep=FALSE)
 	ideal.match <- c()
 	for(j in 1:ncol(hypothesis$queriedProfile))
 	    {
+	    print(paste0("...",colnames(hypothesis$queriedProfile)[j],"..."))
 		af = hypothesis$alleleDb[j][[1]]
 		kn = hypothesis$queriedProfile[,j][[1]]
 		p1 = af[row.names(af)==kn[1],1]
@@ -822,20 +804,19 @@ matchProb = function(hypothesis,rr,fst=0.02,sep=FALSE)
         p1 = (p1*(1+fst))-fst
         p2 = (p2*(1+fst))-fst
 
-
         if(kn[1]==kn[2])
             {
             # undo last bit of fst adjustment
             p1 = (p1-fst)/(1-fst)
             p2 = (p2-fst)/(1-fst)
             # get match new fst adjusted match prob
-            ideal.match = c(ideal.match,rr[2]+(rr[1]*((2*fst+(1-fst)*p1)/(1+fst)))+((1-sum(rr))*homAllele(p1,fst=fst)))
+            ideal.match = c(ideal.match,rr[2]+(rr[1]*((2*fst+(1-fst)*p1)/(1+fst)))+((1-sum(rr))*hom(p1,fst=fst)))
             } else {
             # undo last bit of fst adjustment
             p1 = p1/(1-fst)
             p2 = p2/(1-fst)
             # get match new fst adjusted match prob
-            ideal.match = c(ideal.match,rr[2]+(rr[1]*((fst+(1-fst)*((p1+p2)/2))/(1+fst)))+((1-sum(rr))*hetAllele(p1,p2,fst=fst)))
+            ideal.match = c(ideal.match,rr[2]+(rr[1]*((fst+(1-fst)*((p1+p2)/2))/(1+fst)))+((1-sum(rr))*het(p1,p2,fst=fst)))
             }
 		}
 	if(sep)

@@ -21,8 +21,8 @@
                       the NGMSelect database provided with \code{likeLTD}.}
   \item{linkageFile}{Path to recombination rate information. If NULL then defaults
                     to the linkage file provided with \code{likeLTD}. Only used
-                    if \code{relatedness}=\code{c(0.5,0.25)} i.e. when Q and X are 
-                    siblings.}
+                    if \code{relationship} is no 0 or 1 i.e. when Q and X are 
+                    closely related but not parent/offspring.}
   \item{relationship}{Specified relationship between Q and X. Can take values of 0=unrelated,
 1=parent/offspring, 2=siblings, 3=uncle/nephew, 4=half-uncle/half-nephew, 5=cousins, 
 6=grandparent/grandchild, 7=half-siblings.}
@@ -33,8 +33,8 @@
                         below which an allele is classed as rare, and therefore 
                         combined with other rare unobserved alleles.}
   \item{kit}{Parameter specifying which allele database supplied with likeLTD to use if 
-            \code{linkageFile} is not specified. Possibilities are "DNA17", "Identifiler" 
-            and "SGMplus".}
+            \code{linkageFile} is not specified. Possibilities are "DNA17", "Identifiler", 
+            "SGMplus", "NISTidentifiler" and "NISTglobalfiler".}
   \item{...}{Other parameters to determine how to perform calculations.}
 }
 \value{A list of named input parameters, or hypothesis, suitable for the
